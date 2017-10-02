@@ -19,7 +19,13 @@ export interface Member {
     real_name: string
 };
 
+export interface Suggestion {
+    user_id: string,
+    value: string
+}
+
 export interface SentimentExtract {
     text: string,
-    id: string
+    _id?: string,
+    suggestions: Suggestion[]
 }
