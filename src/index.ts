@@ -3,10 +3,23 @@ import bodyParser = require('body-parser');
 import { Logger, transports } from 'winston';
 import request = require('request-promise-native');
 import fs = require('fs');
+import { MongoClient } from 'mongodb';
 
 const logger = new Logger({
     level: 'debug',
     transports: [new transports.Console()]
+});
+
+// Database setup
+const DB_URL = 'mongodb://localhost:27017/sentiment';
+
+MongoClient.connect(DB_URL, (error, db) => {
+    if (error) {
+        logger.error(error.message);
+    } else {
+        logger.info('Connected to databasse');
+        db.close();
+    }
 });
 
 // Server setup

@@ -92,7 +92,7 @@ export function buildSentimentQuestion (sentimentExtract: SentimentExtract): { t
     const attachments: any[] = [
         {
             text: `"${sentimentExtract.text}"`,
-            callback_id: sentimentExtract.text,
+            callback_id: sentimentExtract._id,
             color: '#3AA3E3',
             actions: [
                 {
