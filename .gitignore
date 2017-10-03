@@ -3,3 +3,4 @@ data
 ./scratch.js
 dist
 .vscode
+coverage
