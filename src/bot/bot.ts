@@ -1,5 +1,5 @@
-import { WebClient, RtmClient } from '@slack/client';
-import { Logger, transports, LoggerInstance } from 'winston';
+import { RtmClient, WebClient } from '@slack/client';
+import { Logger, LoggerInstance, transports } from 'winston';
 import { Channel, Member, SentimentExtract } from '../types';
 import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';
 import { MongoClient, Db, MongoError } from 'mongodb';
