@@ -8,6 +8,8 @@ export async function getRandomExtracts (db: Db, logger: LoggerInstance, total: 
         resolve: (value: SentimentExtract[]) => void, 
         reject: (value: string) => void
     ) => {
+        logger.debug(`Getting ${total} extract${total === 1 ? '' : 's'} from  the database`);
+
         try {
             resolve(await db.collection('extracts').aggregate([
                 { $sample: { size: total } }

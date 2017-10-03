@@ -12,7 +12,7 @@ const logger = new Logger({
 });
 
 // Database setup
-const DB_URL = 'mongodb://localhost:27017/sentiment';
+export const DB_URL = 'mongodb://localhost:27017/sentiment';
 
 // MongoClient.connect(DB_URL, async (error, db) => {
 //     if (error) {
