@@ -25,10 +25,10 @@ export async function getGeneralChannel (client, logger): Promise<Channel> {
         const general: Channel|undefined = channels.find(channel => channel.name === 'general');
 
         if (general !== undefined) {
-            logger.debug('Found #general!');
+            logger.debug('Found #general!')
             resolve(general);
         } else {
-            reject('Could not get the #general channel');
+            reject('Could not get the #general channel')
         }
     });
 }
