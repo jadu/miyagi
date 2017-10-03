@@ -4,6 +4,7 @@ import { Logger, transports } from 'winston';
 import request = require('request-promise-native');
 import fs = require('fs');
 import { MongoClient } from 'mongodb';
+import { getRandomExtracts } from './serverUtils';
 
 const logger = new Logger({
     level: 'debug',
@@ -13,14 +14,18 @@ const logger = new Logger({
 // Database setup
 const DB_URL = 'mongodb://localhost:27017/sentiment';
 
-MongoClient.connect(DB_URL, (error, db) => {
-    if (error) {
-        logger.error(error.message);
-    } else {
-        logger.info('Connected to databasse');
-        db.close();
-    }
-});
+// MongoClient.connect(DB_URL, async (error, db) => {
+//     if (error) {
+//         logger.error(error.message);
+//     } else {
+//         logger.info(`Connected to database "${DB_URL}"`);
+
+//         const randomExtracts = await getRandomExtracts(db, logger, 10);
+
+
+//         db.close();
+//     }
+// });
 
 // Server setup
 const PORT = process.env.PORT || 4567;

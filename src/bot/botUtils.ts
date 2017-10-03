@@ -1,4 +1,4 @@
-import { Member, Channel, UserResponse, ImOpenResponse, SentimentExtract } from './types';
+import { Member, Channel, UserResponse, ImOpenResponse, SentimentExtract } from '../types';
 import { WebClient } from '@slack/client';
 import { LoggerInstance } from 'winston';
 
