@@ -55,7 +55,7 @@ const rtm: RtmClient = (new RtmClient(token)).start();
     }
 
     let successfulDirectMessages: Member[] = [];
-    let unsuccessfulDirectMessages: Member[] = [];
+    let unsuccessfulDirectMessages: Member[] = []
 
     // Send extracts
     for (let human of humans) {

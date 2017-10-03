@@ -20,15 +20,29 @@
     "@types/request": "^2.0.3",
     "@types/request-promise-native": "^1.0.7",
     "@types/winston": "^2.3.6",
-    "eslint": "^4.7.2",
+    "jest": "^21.2.1",
     "nodemon": "^1.12.1",
-    "typescript": "^2.5.3",
-    "typescript-eslint-parser": "^8.0.0"
+    "ts-jest": "^21.0.1",
+    "typescript": "^2.5.3"
   },
   "scripts": {
     "tsc": "tsc",
     "watch": "nodemon ./dist/index.js",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch --coverage"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   },
   "keywords": [],
   "author": "Jadu",
