@@ -14,19 +14,6 @@ const logger = new Logger({
 // Database setup
 export const DB_URL = 'mongodb://localhost:27017/sentiment';
 
-// MongoClient.connect(DB_URL, async (error, db) => {
-//     if (error) {
-//         logger.error(error.message);
-//     } else {
-//         logger.info(`Connected to database "${DB_URL}"`);
-
-//         const randomExtracts = await getRandomExtracts(db, logger, 10);
-
-
-//         db.close();
-//     }
-// });
-
 // Server setup
 const PORT = process.env.PORT || 4567;
 const app = express();
