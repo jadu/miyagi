@@ -1,4 +1,4 @@
-// import { RtmClient, WebClient } from '@slack/client';
+import { RtmClient, WebClient } from '@slack/client';
 // import { Logger, LoggerInstance, transports } from 'winston';
 // import { Channel, Member, SentimentExtract } from '../types';
 // import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';

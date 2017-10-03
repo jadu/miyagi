@@ -48,3 +48,7 @@ export interface Question {
     text: string;
     attachments: Attachment[];
 }
+
+export interface WebClient {
+
+}
