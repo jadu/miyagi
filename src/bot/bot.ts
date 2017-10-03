@@ -1,7 +1,7 @@
-import { WebClient } from '@slack/client';
+import { WebClient, RTMClient } from '@slack/client';
 import { Logger, transports, LoggerInstance } from 'winston';
-import { Channel, Member } from './types';
-import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './actions';
+import { Channel, Member } from '../types';
+import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';
 
 const logger: LoggerInstance = new Logger({
     level: 'debug',
@@ -12,9 +12,11 @@ const token: string|undefined = process.env.SLACK_API_TOKEN;
 
 if (!token) {
     logger.error('You need to export a value for the "SLACK_API_TOKEN" variable');
+    process.exit(1);
 }
 
 const web: WebClient = new WebClient(token);
+const rtm: RTMClient = new RTMClient(token);
 
 // APPLICATION
 (async function () {
