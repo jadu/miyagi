@@ -48,20 +48,28 @@ const rtm: RtmClient = (new RtmClient(token)).start();
     }
 
     // Get extracts
-    // MongoClient.connect(DB_URL, async (error: MongoError, db: Db) => {
-    //     if (error) {
-    //         logger.error(error.message);
-    //     } else {
-    //         logger.info(`Conntected to "${DB_URL}"`);
-    //         extracts = await getRandomExtracts(db, logger, humans.length);
-    //     }
-    // });
+    try {
+        extracts = await getRandomExtracts(database, logger, humans.length);
+    } catch (error) {
+        logger.error(error);
+    }
 
-    console.log(extracts);
+    let successfulDirectMessages: Member[] = [];
+    let unsuccessfulDirectMessages: Member[] = [];
 
-    extracts.forEach((extract: SentimentExtract) => {
-        console.log(extract);
-    });
+    // Send extracts
+    for (let human of humans) {
+        try {
+            await sendDirectMessage(api, logger, human.id, extracts[humans.indexOf(human)]);
+            successfulDirectMessages.push(human);
+        } catch (error) {
+            logger.debug(`Unable to send direct message to "${human.real_name}"`);
+            unsuccessfulDirectMessages.push(human);
+        }
+    }
+
+    logger.info(`Sent ${successfulDirectMessages.length}/${humans.length} messages successfully`);
+    database.close();
 })();
 
 

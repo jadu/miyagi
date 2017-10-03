@@ -72,12 +72,11 @@ export async function sendDirectMessage (client: WebClient, logger: LoggerInstan
     ) => {
         try {
             const { channel }: ImOpenResponse = await client.im.open(userId);
-            const { text, attachments } = buildSentimentQuestion(sentimentExtract);
+            const { text, attachments } = buildSentimentQuestion(sentimentExtract, userId);
             const directMessage = await client.chat.postMessage(channel.id, text, { attachments });
 
             resolve(directMessage);
         } catch (error) {
-            logger.error(error);
             reject(error);
         }
     });
@@ -86,13 +85,14 @@ export async function sendDirectMessage (client: WebClient, logger: LoggerInstan
 /**
  * Build the sentiment question object
  * @param sentimentExtract 
+ * @param userId
  */
-export function buildSentimentQuestion (sentimentExtract: SentimentExtract): { text: string, attachments: any[] } {
+export function buildSentimentQuestion (sentimentExtract: SentimentExtract, userId: string): { text: string, attachments: any[] } {
     const text: string = "Have you got 5 minutes to help us train our Machine Learning platform? Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*";
     const attachments: any[] = [
         {
             text: `"${sentimentExtract.text}"`,
-            callback_id: sentimentExtract._id,
+            callback_id: `${sentimentExtract._id}:${userId}`,
             color: '#3AA3E3',
             actions: [
                 {

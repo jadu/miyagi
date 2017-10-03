@@ -27,7 +27,8 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "watch": "nodemon ./dist/index.js"
+    "watch": "nodemon ./dist/index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Jadu",
