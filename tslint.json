@@ -14,7 +14,8 @@
         },
         "space-before-function-paren": false,
         "trailing-comma": false,
-        "only-arrow-functions": false
+        "only-arrow-functions": false,
+        "interface-name": false
     },
     "rulesDirectory": []
 }
