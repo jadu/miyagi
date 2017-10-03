@@ -1,10 +1,10 @@
-import { RtmClient, WebClient } from '@slack/client';
-import { Logger, LoggerInstance, transports } from 'winston';
-import { Channel, Member, SentimentExtract } from '../types';
-import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';
-import { MongoClient, Db, MongoError } from 'mongodb';
-import { getRandomExtracts } from '../server/serverUtils';
-import { DB_URL } from '../server/server';
+// import { RtmClient, WebClient } from '@slack/client';
+// import { Logger, LoggerInstance, transports } from 'winston';
+// import { Channel, Member, SentimentExtract } from '../types';
+// import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';
+// import { MongoClient, Db, MongoError } from 'mongodb';
+// import { getRandomExtracts } from '../server/serverUtils';
+// import { DB_URL } from '../server/server';
 
 const logger: LoggerInstance = new Logger({
     level: 'debug',
@@ -32,8 +32,8 @@ const rtm: RtmClient = (new RtmClient(token)).start();
     // Get list of humans
     try {
         const general: Channel = await getGeneralChannel(api, logger);
-       
-        humans = await getHumansFromChannel(api, logger, general); 
+
+        humans = await getHumansFromChannel(api, logger, general);
         logger.info(`Got ${humans.length} human${humans.length === 1 ? '' : 's'} from #general`);
         logger.debug(humans.map(human => human.real_name).join(', '));
     } catch (error) {

@@ -5,17 +5,13 @@
     ],
     "jsRules": {},
     "rules": {
-        "no-console": {
-            "severity": "error"
-        },
-        "quotemark": {
-            "options": "single",
-            "severity": "error"
-        },
-        "space-before-function-paren": false,
+        "no-console": [true, "log", "error"],
+        "quotemark": [true, "single", "error"],
+        "space-before-function-paren": [true, "always"],
         "trailing-comma": false,
         "only-arrow-functions": false,
-        "interface-name": false
+        "interface-name": false,
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }
