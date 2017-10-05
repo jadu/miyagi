@@ -1,17 +1,17 @@
+import { SentimentExtract } from '../../src/interfaces/SentimentExtract';
 import QuestionProvider from '../../src/providers/QuestionProvider';
 import ListService from '../../src/services/ListService';
-import { SentimentExtract } from '../../src/types';
-
-jest.mock('../../src/services/ListService');
+import { mock, instance, when, verify, deepEqual } from 'ts-mockito';
 
 describe('QuestionProvider', () => {
     let questionProvider: QuestionProvider;
-    let listService: jest.Mocked<ListService>;
+    let listService: ListService;
 
     beforeEach(() => {
-        listService = new ListService() as any;
+        listService = mock(ListService);
         questionProvider = new QuestionProvider(
-            listService
+            instance(listService),
+            ['test openner']
         );
     });
 
@@ -23,10 +23,10 @@ describe('QuestionProvider', () => {
                 suggestions: []
             };
 
-            listService.getRandomItem.mockReturnValue('test question');
+            when(listService.getRandomItem(deepEqual(['test openner']))).thenReturn('test openner');
 
             expect(questionProvider.build(extract, 'user_id')).toEqual({
-                text: 'test question',
+                text: 'test openner',
                 attachments: [
                     {
                         text: '"test extract"',

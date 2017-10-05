@@ -10,8 +10,9 @@ describe('ListService', () => {
     describe('getRandomItem', () => {
         test('should return a random item in an array', () => {
             const list: any[] = ['foo', 'bar', 'baz'];
+            const actual = listService.getRandomItem(list);
 
-            expect(listService.getRandomItem(list)).toBeTruthy();
+            expect(list.find((i: string) => i === actual)).toBeTruthy();
         });
     });
 });

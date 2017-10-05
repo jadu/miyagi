@@ -4,6 +4,6 @@ export default class ListService {
      * @param list
      */
     public getRandomItem (list: any[]): any {
-        return Math.random() * list.length;
+        return list[Math.floor(Math.random() * list.length)];
     }
 }

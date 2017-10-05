@@ -1,5 +1,6 @@
+import { SentimentExtract } from '../interfaces/SentimentExtract';
+import { Question } from '../interfaces/Slack';
 import ListService from '../services/ListService';
-import { Question, SentimentExtract } from '../types';
 
 export default class QuestionProvider {
     private openers: string[];
@@ -8,13 +9,9 @@ export default class QuestionProvider {
      * QuestionService
      */
     constructor (
-        private listService: ListService
-    ) {
-        this.openers = [
-            `Have you got 5 minutes to help us train our Machine Learning platform?
-            Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*`
-        ];
-    }
+        private listService: ListService,
+        private openners: string[]
+    ) {}
 
     /**
      * Build Question
@@ -23,7 +20,7 @@ export default class QuestionProvider {
      */
     public build (sentimentExtract: SentimentExtract, userId: string): Question {
         return {
-            text: this.listService.getRandomItem(this.openers),
+            text: this.listService.getRandomItem(this.openners),
             attachments: [
                 {
                     text: `"${sentimentExtract.text}"`,
