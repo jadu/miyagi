@@ -25,22 +25,26 @@ export default class SlackUserService {
                 return reject(error);
             }
 
-            const members: Array<Promise<UserResponse>> = [];
+            const users: Array<Promise<UserResponse>> = [];
 
-            this.logger.log('info', `There are ${channel.members.length} members in #general`);
+            this.logger.log('info', `There are ${channel.members.length} users in #general`);
 
             // Make client request for user info for each user found
             for (const userId of channel.members) {
-                members.push(this.client.users.info(userId));
+                users.push(this.client.users.info(userId));
             }
 
             // Filter humans and return user objects
-            Promise.all(members).then((response: UserResponse[]) => {
-                resolve(
-                    response
-                        .filter((res: UserResponse) => !res.user.is_bot && res.user.name !== 'slackbot')
-                        .map((res: UserResponse) => res.user)
+            Promise.all(users).then((response: UserResponse[]) => {
+                const humans: User[] = response
+                    .filter((res: UserResponse) => !res.user.is_bot && res.user.name !== 'slackbot')
+                    .map((res: UserResponse) => res.user);
+
+                this.logger.log(
+                    'info', `Got ${humans.length} human${humans.length === 1 ? '' : 's'} from #${channel.name}`
                 );
+                this.logger.debug(humans.map((human: User) => human.real_name).join(', '));
+                resolve(humans);
             }).catch((error: string) => {
                 return reject(error);
             });

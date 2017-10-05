@@ -1,10 +1,14 @@
 import { RtmClient, WebClient } from '@slack/client';
-// import { Logger, LoggerInstance, transports } from 'winston';
-// import { Channel, Member, SentimentExtract } from '../types';
-// import { getHumansFromChannel, getGeneralChannel, sendDirectMessage } from './botUtils';
-// import { MongoClient, Db, MongoError } from 'mongodb';
-// import { getRandomExtracts } from '../server/serverUtils';
-// import { DB_URL } from '../server/server';
+import { Logger, LoggerInstance, transports } from 'winston';
+import { SentimentExtract } from '../interfaces/SentimentExtract';
+import { User } from '../interfaces/User';
+import { Db, MongoClient } from 'mongodb';
+import SlackChannelService from '../services/SlackChannelService';
+import QuestionProvider from '../providers/QuestionProvider';
+import ListService from '../services/ListService';
+import SlackUserService from '../services/SlackUserService';
+import { Channel } from '../interfaces/Channel';
+import DatabaseService from '../services/DatabaseService';
 
 const logger: LoggerInstance = new Logger({
     level: 'debug',
@@ -23,44 +27,44 @@ const api: WebClient = new WebClient(token);
 // Using this just to indicate whether the Bot is online
 const rtm: RtmClient = (new RtmClient(token)).start();
 
+// Services
+const listService: ListService = new ListService();
+const questionProvider: QuestionProvider = new QuestionProvider(
+    listService,
+    ['Good day! Help!', 'oi, you, help me with this, now']
+);
+const slackChannelService: SlackChannelService = new SlackChannelService(api, logger, questionProvider);
+const slackUserService: SlackUserService = new SlackUserService(api, logger, slackChannelService);
+const databaseService: DatabaseService = new DatabaseService(
+    'mongodb://localhost:27017/sentiment', new MongoClient(), logger
+);
+
 // APPLICATION
 (async function () {
-    let humans: Member[] = [];
-    let extracts: SentimentExtract[] = [];
-    let database: Db;
+    let humans: User[];
+    let extracts: SentimentExtract[];
 
     // Get list of humans
     try {
-        const general: Channel = await getGeneralChannel(api, logger);
-
-        humans = await getHumansFromChannel(api, logger, general);
-        logger.info(`Got ${humans.length} human${humans.length === 1 ? '' : 's'} from #general`);
-        logger.debug(humans.map(human => human.real_name).join(', '));
-    } catch (error) {
-        logger.error(error);
-    }
-
-    // Connect to database
-    try {
-        database = await MongoClient.connect(DB_URL);
+        humans = await slackUserService.getHumansFromChannel('general');
     } catch (error) {
         logger.error(error);
     }
 
     // Get extracts
     try {
-        extracts = await getRandomExtracts(database, logger, humans.length);
+        extracts = await databaseService.getRandomExtracts(humans.length);
     } catch (error) {
         logger.error(error);
     }
 
-    let successfulDirectMessages: Member[] = [];
-    let unsuccessfulDirectMessages: Member[] = []
+    const successfulDirectMessages: User[] = [];
+    const unsuccessfulDirectMessages: User[] = [];
 
     // Send extracts
-    for (let human of humans) {
+    for (const human of humans) {
         try {
-            await sendDirectMessage(api, logger, human.id, extracts[humans.indexOf(human)]);
+            await slackChannelService.sendDirectMessage(human, extracts[humans.indexOf(human)]);
             successfulDirectMessages.push(human);
         } catch (error) {
             logger.debug(`Unable to send direct message to "${human.real_name}"`);
@@ -69,7 +73,4 @@ const rtm: RtmClient = (new RtmClient(token)).start();
     }
 
     logger.info(`Sent ${successfulDirectMessages.length}/${humans.length} messages successfully`);
-    database.close();
 })();
-
-

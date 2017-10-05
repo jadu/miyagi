@@ -33,7 +33,7 @@ export default class SlackChannelService {
             const channel: Channel|undefined = channels.find((c: Channel) => c.name === channelName);
 
             if (channel !== undefined) {
-                this.logger.log('debug', `Found the #${channelName} channel`);
+                this.logger.log('info', `Found the #${channelName} channel`);
                 return resolve(channel);
             } else {
                 return reject(`Could not get the #${channelName} channel`);
