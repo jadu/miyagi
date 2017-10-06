@@ -1,25 +1,17 @@
-import { SentimentExtract } from '../types';
+import { SentimentExtract } from '../interfaces/SentimentExtract';
 
 export const fixtures: SentimentExtract[] = [
     {
         text: 'This camera is perfect for an enthusiastic amateur photographer',
-        suggestions: [
-            { user_id: 'QWERTY', value: 'positive' }
-        ]
+        suggestions: []
     },
     {
         text: 'It is small enough to fit easily in a coat pocket or purse',
-        suggestions: [
-            { user_id: 'QWERTY', value: 'negative' },
-            { user_id: 'ASDFGH', value: 'neutral' }
-        ]
+        suggestions: []
     },
     {
         text: 'The manual does a fine job filling in any blanks that remain',
-        suggestions: [
-            { user_id: 'QWERTY', value: 'neutral' },
-            { user_id: 'ASDFGH', value: 'neutral' }
-        ]
+        suggestions: []
     },
     {
         text: 'I love photography',

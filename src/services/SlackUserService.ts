@@ -1,8 +1,7 @@
 import { WebClient } from '@slack/client';
-import { Channel } from '../interfaces/Channel';
-import { User, UserResponse } from '../interfaces/User';
 import { LoggerInstance } from 'winston';
 import SlackChannelService from './SlackChannelService';
+import { UserResponse, User, Channel } from '../interfaces/Slack';
 
 export default class SlackUserService {
     constructor (

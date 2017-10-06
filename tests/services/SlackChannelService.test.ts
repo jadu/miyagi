@@ -1,7 +1,7 @@
 import { Channel } from '../../src/interfaces/Channel';
 import SlackChannelService from '../../src/services/SlackChannelService';
 import { Logger, LoggerInstance } from 'winston';
-import QuestionProvider from '../../src/providers/QuestionProvider';
+import MessageService from '../../src/providers/MessageService';
 import { User } from '../../src/interfaces/User';
 import { SentimentExtract } from '../../src/interfaces/SentimentExtract';
 import { mock, instance, when, verify } from 'ts-mockito';
@@ -11,15 +11,15 @@ describe('SlackChannelService', () => {
     let client;
     let slackChannelService: SlackChannelService;
     let logger: LoggerInstance;
-    let questionProvider: QuestionProvider;
+    let MessageService: MessageService;
 
     beforeEach(() => {
         client = {
             channels: { list: jest.fn() }, im: { open: jest.fn() }, chat: { postMessage: jest.fn() }
         };
-        questionProvider = mock(QuestionProvider);
+        MessageService = mock(MessageService);
         logger = new Logger();
-        slackChannelService = new SlackChannelService(client, logger, instance(questionProvider));
+        slackChannelService = new SlackChannelService(client, logger, instance(MessageService));
     });
 
     describe('getChannel', () => {
@@ -104,7 +104,7 @@ describe('SlackChannelService', () => {
             };
 
             client.im.open.mockReturnValue(Promise.resolve(imOpenResponse));
-            when(questionProvider.build(extract, user.id)).thenReturn(question);
+            when(MessageService.build(extract, user.id)).thenReturn(question);
         });
 
         test('should invoke the client and open a direct message channel', () => {

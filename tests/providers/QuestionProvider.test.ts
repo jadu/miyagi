@@ -1,17 +1,18 @@
 import { SentimentExtract } from '../../src/interfaces/SentimentExtract';
-import QuestionProvider from '../../src/providers/QuestionProvider';
+import MessageService from '../../src/services/MessageService';
 import ListService from '../../src/services/ListService';
 import { mock, instance, when, verify, deepEqual } from 'ts-mockito';
 
-describe('QuestionProvider', () => {
-    let questionProvider: QuestionProvider;
+describe('MessageService', () => {
+    let messageService: MessageService;
     let listService: ListService;
 
     beforeEach(() => {
         listService = mock(ListService);
-        questionProvider = new QuestionProvider(
+        messageService = new MessageService(
             instance(listService),
-            ['test openner']
+            ['test openner'],
+            ['test closer']
         );
     });
 
@@ -25,7 +26,7 @@ describe('QuestionProvider', () => {
 
             when(listService.getRandomItem(deepEqual(['test openner']))).thenReturn('test openner');
 
-            expect(questionProvider.build(extract, 'user_id')).toEqual({
+            expect(MessageService.build(extract, 'user_id')).toEqual({
                 text: 'test openner',
                 attachments: [
                     {

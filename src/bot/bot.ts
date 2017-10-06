@@ -1,76 +1,118 @@
 import { RtmClient, WebClient } from '@slack/client';
-import { Logger, LoggerInstance, transports } from 'winston';
+import { Logger, LoggerInstance } from 'winston';
 import { SentimentExtract } from '../interfaces/SentimentExtract';
-import { User } from '../interfaces/User';
-import { Db, MongoClient } from 'mongodb';
 import SlackChannelService from '../services/SlackChannelService';
-import QuestionProvider from '../providers/QuestionProvider';
-import ListService from '../services/ListService';
+import MessageService from '../services/MessageService';
 import SlackUserService from '../services/SlackUserService';
-import { Channel } from '../interfaces/Channel';
 import DatabaseService from '../services/DatabaseService';
+import { User, Message, Channel } from '../interfaces/Slack';
 
-const logger: LoggerInstance = new Logger({
-    level: 'debug',
-    transports: [new transports.Console()]
-});
+export default class Miyagi {
+    private rtmClient: WebClient;
+    private webClient: RtmClient;
+    private token: string;
 
-const token: string|undefined = process.env.SLACK_API_TOKEN;
+    constructor (
+        private slackUserService: SlackUserService,
+        private slackChannelService: SlackChannelService,
+        private messageService: MessageService,
+        private databaseService: DatabaseService,
+        private logger: LoggerInstance
+    ) {}
 
-if (!token) {
-    logger.error('You need to export a value for the "SLACK_API_TOKEN" variable');
-    process.exit(1);
-}
+    public async sendQuestionsToAllUsers (debug: boolean = false): Promise<any>  {
+        let humans: User[];
+        let extracts: SentimentExtract[];
 
-// Slack Web API client
-const api: WebClient = new WebClient(token);
-// Using this just to indicate whether the Bot is online
-const rtm: RtmClient = (new RtmClient(token)).start();
-
-// Services
-const listService: ListService = new ListService();
-const questionProvider: QuestionProvider = new QuestionProvider(
-    listService,
-    ['Good day! Help!', 'oi, you, help me with this, now']
-);
-const slackChannelService: SlackChannelService = new SlackChannelService(api, logger, questionProvider);
-const slackUserService: SlackUserService = new SlackUserService(api, logger, slackChannelService);
-const databaseService: DatabaseService = new DatabaseService(
-    'mongodb://localhost:27017/sentiment', new MongoClient(), logger
-);
-
-// APPLICATION
-(async function () {
-    let humans: User[];
-    let extracts: SentimentExtract[];
-
-    // Get list of humans
-    try {
-        humans = await slackUserService.getHumansFromChannel('general');
-    } catch (error) {
-        logger.error(error);
-    }
-
-    // Get extracts
-    try {
-        extracts = await databaseService.getRandomExtracts(humans.length);
-    } catch (error) {
-        logger.error(error);
-    }
-
-    const successfulDirectMessages: User[] = [];
-    const unsuccessfulDirectMessages: User[] = [];
-
-    // Send extracts
-    for (const human of humans) {
+        // Get list of humans
         try {
-            await slackChannelService.sendDirectMessage(human, extracts[humans.indexOf(human)]);
-            successfulDirectMessages.push(human);
+            humans = await this.slackUserService.getHumansFromChannel('general');
         } catch (error) {
-            logger.debug(`Unable to send direct message to "${human.real_name}"`);
-            unsuccessfulDirectMessages.push(human);
+            this.logger.error(error);
+        }
+
+        // Get extracts
+        try {
+            extracts = await this.databaseService.getRandomExtracts(humans.length);
+        } catch (error) {
+            this.logger.error(error);
+        }
+
+        const successfulDirectMessages: User[] = [];
+        const unsuccessfulDirectMessages: User[] = [];
+
+        // Send extracts to humans
+        for (const human of humans) {
+            if (debug) {
+                const username: string = human.profile.display_name_normalized.toLowerCase();
+
+                if (username !== 'mike' && username !== 'mike (jadu)') {
+                    continue;
+                }
+            }
+
+            try {
+                await this.slackChannelService.sendDirectMessage(
+                    human,
+                    this.messageService.buildQuestion(extracts[humans.indexOf(human)], human.id)
+                );
+                successfulDirectMessages.push(human);
+            } catch (error) {
+                this.logger.error(`Unable to send direct message to "${human.real_name}"`);
+                unsuccessfulDirectMessages.push(human);
+            }
+        }
+
+        this.logger.info(`Sent ${successfulDirectMessages.length}/${humans.length} messages successfully`);
+    }
+
+    public async sendQuestionToUser (user: User): Promise<any> {
+        let extract: SentimentExtract;
+
+        // Get extract
+        try {
+            [ extract ] = await this.databaseService.getRandomExtracts(1);
+        } catch (error) {
+            this.logger.error(error);
+        }
+
+        try {
+            await this.slackChannelService.sendDirectMessage(user, this.messageService.buildQuestion(extract, user.id));
+            this.logger.info(`Sent message to ${user.name} successfully`);
+        } catch (error) {
+            this.logger.debug(`Unable to send direct message to "${user.name}"`);
         }
     }
 
-    logger.info(`Sent ${successfulDirectMessages.length}/${humans.length} messages successfully`);
-})();
+    public updateQuestion (message: Message, user: User): Message {
+        return this.messageService.updateQuestion(message, user.id);
+    }
+
+    public async sendResponse (message: Message, channel: Channel, user: User, value: string, ): Promise<any> {
+        let extract: SentimentExtract;
+
+        // Get extract
+        try {
+            [ extract ] = await this.databaseService.getRandomExtracts(1);
+        } catch (error) {
+            this.logger.error(error);
+        }
+
+        this.logger.debug(`Sending response to "${user.name}"`);
+
+        // Update with next question
+        await this.slackChannelService.updateMessage(
+            message.ts,
+            channel.id,
+            this.messageService.buildQuestion(extract, user.id)
+        );
+    }
+
+    public async goodbye (message: Message, channel: Channel): Promise<void> {
+        this.slackChannelService.updateMessage(
+            message.ts,
+            channel.id,
+            this.messageService.endConversation(message)
+        );
+    }
+}

@@ -1,16 +1,11 @@
 import { WebClient } from '@slack/client';
 import { LoggerInstance } from 'winston';
-import { Channel } from '../interfaces/Channel';
-import { User } from '../interfaces/User';
-import { SentimentExtract } from '../interfaces/SentimentExtract';
-import { ImOpenResponse, Question } from '../interfaces/Slack';
-import QuestionProvider from '../providers/QuestionProvider';
+import { ImOpenResponse, Channel, User, Message } from '../interfaces/Slack';
 
 export default class SlackChannelService {
     constructor (
         private client: WebClient,
-        private logger: LoggerInstance,
-        private questionProvider: QuestionProvider
+        private logger: LoggerInstance
     ) {}
 
     public getChannel (channelName: string): Promise<Channel> {
@@ -41,20 +36,30 @@ export default class SlackChannelService {
         });
     }
 
-    public sendDirectMessage (user: User, sentimentExtract: SentimentExtract): Promise<any> {
+    public sendDirectMessage (user: User, message: Message): Promise<any> {
         return new Promise(async (
             resolve: (value: any) => void,
             reject: (value: string) => void
         ) => {
             try {
                 const { channel }: ImOpenResponse = await this.client.im.open(user.id);
-                const { text, attachments }: Question = this.questionProvider.build(sentimentExtract, user.id);
-                const directMessage = await this.client.chat.postMessage(channel.id, text, { attachments });
+                const directMessage = await this.client.chat.postMessage(
+                    channel.id, message.text, { attachments: message.attachments }
+                );
 
                 return resolve(directMessage);
             } catch (error) {
                 return reject(error);
             }
         });
+    }
+
+    public async updateMessage (messageTimestamp: string, channeId: string, newMessage: Message): Promise<any> {
+        return await this.client.chat.update(
+            messageTimestamp,
+            channeId,
+            newMessage.text,
+            { attachments: newMessage.attachments }
+        );
     }
 }

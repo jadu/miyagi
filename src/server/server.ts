@@ -2,29 +2,91 @@ import express = require('express');
 import bodyParser = require('body-parser');
 import { Logger, transports } from 'winston';
 import request = require('request-promise-native');
-import fs = require('fs');
 import { MongoClient } from 'mongodb';
-import { getRandomExtracts } from './serverUtils';
+import { InteractiveComponentPayload } from '../interfaces/Slack';
+import DatabaseService from '../services/DatabaseService';
+import SlackAuthenticationService from '../services/SlackAuthenticationService';
+import { WebClient } from '@slack/client';
+import MiyagiFactory from '../factories/MiyagiFactory';
+import Miyagi from '../bot/bot';
 
 const logger = new Logger({
     level: 'debug',
     transports: [new transports.Console()]
 });
 
-// Database setup
-export const DB_URL = 'mongodb://localhost:27017/sentiment';
-
-// Server setup
+/**
+ * Globals
+ */
+const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/sentiment';
+const SLACK_API_TOKEN = process.env.SLACK_API_TOKEN || null;
 const PORT = process.env.PORT || 4567;
+
+/**
+ * Services
+ */
+
+// Database service
+const databaseService: DatabaseService = new DatabaseService(DATABASE_URL, new MongoClient(), logger);
+// Slack Web API client
+const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
+    SLACK_API_TOKEN, logger
+);
+
+try {
+    slackAuthenticationService.connect();
+} catch (error) {
+    logger.error(error);
+}
+
+// Miyagi instance
+export const miyagi: Miyagi = MiyagiFactory.create(
+    slackAuthenticationService.getWebClient(),
+    databaseService,
+    logger,
+    ['Have you got 5 minutes to help us train our Machine Learning platform? Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
+    ['Thank you, would you like to play again?'],
+    ['Thank you for your help today, see you next time :wave:']
+);
+
+/**
+ * Server
+ */
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Setup http server to receive slack POST requests
-app.post('/', (req, res) => {
-    res.sendStatus(200);
-    logger.debug('Got a POST request');
-    console.log(JSON.parse(req.body.payload));
+app.post('/', async (req, res) => {
+    // @todo validate slack app token !important
+    const payload: InteractiveComponentPayload = JSON.parse(req.body.payload);
+    const [ type, extractId, userId ]: string[] = payload.callback_id.split(':');
+    const value = payload.actions[0].value;
+
+    logger.debug(`Got a "${type}" response from "${payload.user.name}"`);
+
+    // limit those rates
+    // @todo - factor this into a response service
+    setTimeout(() => {
+        if (value) {
+            miyagi.sendResponse(payload.original_message, payload.channel, payload.user, value);
+        } else {
+            miyagi.goodbye(payload.original_message, payload.channel);
+        }
+        res.status(200);
+        res.send();
+    }, 1500);
+});
+
+app.get('/cli/send_questions', (req, res) => {
+    try {
+        miyagi.sendQuestionsToAllUsers(req.query.debug || false);
+        res.sendStatus(200);
+    } catch (error) {
+        logger.error(error);
+        res.sendStatus(500);
+    }
 });
 
 app.get('/', (req, res) => {
@@ -34,8 +96,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     logger.info(`Server listening on ${PORT}`);
 });
-
-// Setup cron service to deliver messages to Slack users
-
-// Setup database for retrieval and storage of extracts
-
