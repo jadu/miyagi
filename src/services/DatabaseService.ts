@@ -2,6 +2,7 @@ import { MongoClient, Db, ObjectId } from 'mongodb';
 import { LoggerInstance } from 'winston';
 import { SentimentExtract, Suggestion } from '../interfaces/SentimentExtract';
 import { InteractiveComponentPayload } from '../interfaces/Slack';
+import ListService from './ListService';
 
 export default class DatabaseService {
     private connection: Db;
@@ -9,7 +10,8 @@ export default class DatabaseService {
     constructor (
         private url: string,
         private client: MongoClient,
-        private logger: LoggerInstance
+        private logger: LoggerInstance,
+        private listService: ListService
     ) {}
 
     public async getRandomExtracts (total: number): Promise<SentimentExtract[]> {
@@ -35,6 +37,22 @@ export default class DatabaseService {
                 { _id : new ObjectId(extractId) },
                 { $push: { suggestions: suggestion }}
             );
+    }
+
+    public async getNextExtract (userId: string): Promise<SentimentExtract> {
+        try {
+            await this.connect();
+            const extracts: SentimentExtract[] = await this.connection.collection('extracts').find().toArray();
+            const unique: SentimentExtract|undefined = extracts.find((extract: SentimentExtract) => {
+                return !extract.suggestions.find((suggestion: Suggestion) => {
+                    return suggestion.user_id === userId;
+                });
+            });
+
+            return unique ? unique : this.listService.getRandomItem(extracts);
+        } finally {
+            this.close();
+        }
     }
 
     private async connect (): Promise<any> {

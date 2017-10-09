@@ -14,6 +14,7 @@ export interface User {
     is_bot?: boolean;
     real_name?: string;
     profile?: Profile;
+    is_admin?: boolean;
 }
 
 export interface UserResponse {
@@ -33,6 +34,11 @@ export interface Attachment {
     callback_id: string;
     color?: string;
     actions?: Action[];
+}
+
+export interface MessageResponse {
+    channel: string;
+    message: Message;
 }
 
 export interface Message {

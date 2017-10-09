@@ -6,6 +6,8 @@ import SlackChannelService from '../services/SlackChannelService';
 import MessageService from '../services/MessageService';
 import ListService from '../services/ListService';
 import DatabaseService from '../services/DatabaseService';
+import HumanManager from '../managers/HumanManager';
+import ConversationService from '../services/ConversationService';
 
 export default class MiyagiFactory {
     public static create (
@@ -14,7 +16,8 @@ export default class MiyagiFactory {
         logger: LoggerInstance,
         openers: string[],
         closers: string[],
-        enders: string[]
+        enders: string[],
+        interactionTimeout: number = 10000
     ): Miyagi {
         const listService: ListService = new ListService();
         const messageService: MessageService = new MessageService(
@@ -32,13 +35,26 @@ export default class MiyagiFactory {
             logger,
             channelService
         );
+        const humanManager: HumanManager = new HumanManager(
+            userService,
+            logger,
+            listService,
+            interactionTimeout
+        );
+        const conversationService: ConversationService = new ConversationService(
+            humanManager,
+            logger,
+            channelService,
+            messageService
+        );
 
         return new Miyagi(
-            userService,
+            humanManager,
             channelService,
             messageService,
             databaseService,
-            logger
+            logger,
+            conversationService
         );
     }
 }

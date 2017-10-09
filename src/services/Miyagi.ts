@@ -5,114 +5,105 @@ import SlackChannelService from '../services/SlackChannelService';
 import MessageService from '../services/MessageService';
 import SlackUserService from '../services/SlackUserService';
 import DatabaseService from '../services/DatabaseService';
-import { User, Message, Channel } from '../interfaces/Slack';
+import { User, Message, Channel, InteractiveComponentPayload, MessageResponse } from '../interfaces/Slack';
+import HumanManager from '../managers/HumanManager';
+import ConversationService from '../services/ConversationService';
 
 export default class Miyagi {
+    private debug: boolean;
     private rtmClient: WebClient;
     private webClient: RtmClient;
     private token: string;
 
     constructor (
-        private slackUserService: SlackUserService,
+        private humanManager: HumanManager,
         private slackChannelService: SlackChannelService,
         private messageService: MessageService,
         private databaseService: DatabaseService,
-        private logger: LoggerInstance
-    ) {}
+        private logger: LoggerInstance,
+        private conversationService: ConversationService
+    ) {
+        this.debug = false;
+    }
 
-    public async sendQuestionsToAllUsers (debug: boolean = false): Promise<any>  {
-        let humans: User[];
-        let extracts: SentimentExtract[];
+    public setDebug (debug: boolean): void {
+        this.debug = debug;
+    }
 
-        // Get list of humans
+    public async refresh (channel: string = 'general'): Promise<void> {
+        this.logger.debug(`Refreahing Miyagi${this.debug && ' in debug mode'}`);
+        this.humanManager.resetSessionSuggestions();
+
         try {
-            humans = await this.slackUserService.getHumansFromChannel('general');
+            await this.humanManager.fetch(channel, this.debug);
         } catch (error) {
-            this.logger.error(error);
+            this.logger.error('Unable to fetch humans');
+        }
+    }
+
+    public async sendQuestion (
+        channelId?: string,
+        messageTimestamp?: string,
+        user?: User
+    ): Promise<any>  {
+        // Get a human from args (payload) or fetch a fresh one from the manager
+        const human: User = user ? user : this.humanManager.getNextHuman();
+
+        if (!human) {
+            // If we have ran out of humans, log the session statistics and end the process
+            this.logger.info(`Got ${this.humanManager.getSessionSuggestions().length} ` +
+                `suggestions from ${this.humanManager.getNumberOfCachedHumans()} humans in this session`);
+            process.exit(0);
+            return;
         }
 
-        // Get extracts
+        // Build next question
+        const question: Message = this.messageService.buildQuestion(
+            await this.databaseService.getNextExtract(human.id),
+            human.id,
+            { replace: !!user }
+        );
+
+        // Store the next message we will send
+        let nextMessage: MessageResponse;
+
         try {
-            extracts = await this.databaseService.getRandomExtracts(humans.length);
-        } catch (error) {
-            this.logger.error(error);
-        }
-
-        const successfulDirectMessages: User[] = [];
-        const unsuccessfulDirectMessages: User[] = [];
-
-        // Send extracts to humans
-        for (const human of humans) {
-            if (debug) {
-                const username: string = human.profile.display_name_normalized.toLowerCase();
-
-                if (username !== 'mike' && username !== 'mike (jadu)') {
-                    continue;
-                }
-            }
-
-            try {
-                await this.slackChannelService.sendDirectMessage(
-                    human,
-                    this.messageService.buildQuestion(extracts[humans.indexOf(human)], human.id)
+            if (user) {
+                // If we have a payload update the previous message with a new question
+                nextMessage = await this.slackChannelService.updateMessage(
+                    messageTimestamp,
+                    channelId,
+                    question
                 );
-                successfulDirectMessages.push(human);
-            } catch (error) {
-                this.logger.error(`Unable to send direct message to "${human.real_name}"`);
-                unsuccessfulDirectMessages.push(human);
+                this.logger.info(`Sent another question to "${human.name}"`);
+            } else {
+                // Send a new message to new user
+                nextMessage = await this.slackChannelService.sendDirectMessage(human, question);
+                this.logger.info(`Sent a new question to "${human.name}"`);
             }
-        }
-
-        this.logger.info(`Sent ${successfulDirectMessages.length}/${humans.length} messages successfully`);
-    }
-
-    public async sendQuestionToUser (user: User): Promise<any> {
-        let extract: SentimentExtract;
-
-        // Get extract
-        try {
-            [ extract ] = await this.databaseService.getRandomExtracts(1);
         } catch (error) {
             this.logger.error(error);
         }
 
-        try {
-            await this.slackChannelService.sendDirectMessage(user, this.messageService.buildQuestion(extract, user.id));
-            this.logger.info(`Sent message to ${user.name} successfully`);
-        } catch (error) {
-            this.logger.debug(`Unable to send direct message to "${user.name}"`);
-        }
+        // Start interaction timer, first argument will be invoked once the timer is complete
+        this.humanManager.startInteractionTimeout(async () => {
+            // Say Goodbye
+            await this.conversationService.goodbye(
+                human.name,
+                nextMessage.channel,
+                nextMessage.message
+            );
+
+            // Recursively invoke this method for the next user
+            return this.sendQuestion();
+        });
     }
 
-    public updateQuestion (message: Message, user: User): Message {
-        return this.messageService.updateQuestion(message, user.id);
+    public trackSessionSuggestion (user: User, value: string): void {
+        this.humanManager.addSessionSuggestion(user.id, user.name, value);
     }
 
-    public async sendResponse (message: Message, channel: Channel, user: User, value: string, ): Promise<any> {
-        let extract: SentimentExtract;
-
-        // Get extract
-        try {
-            [ extract ] = await this.databaseService.getRandomExtracts(1);
-        } catch (error) {
-            this.logger.error(error);
-        }
-
-        this.logger.debug(`Sending response to "${user.name}"`);
-
-        // Update with next question
-        await this.slackChannelService.updateMessage(
-            message.ts,
-            channel.id,
-            this.messageService.buildQuestion(extract, user.id)
-        );
-    }
-
-    public async goodbye (message: Message, channel: Channel): Promise<void> {
-        this.slackChannelService.updateMessage(
-            message.ts,
-            channel.id,
-            this.messageService.endConversation(message)
-        );
+    public async sayGoodbye (message: Message, channel: Channel, user: User): Promise<void> {
+        this.conversationService.goodbye(user.name, channel.id, message);
     }
 }

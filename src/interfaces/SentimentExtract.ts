@@ -5,6 +5,7 @@ export interface SentimentExtract {
 }
 
 export interface Suggestion {
+    name?: string;
     user_id: string;
     value: string;
 }

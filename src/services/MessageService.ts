@@ -21,18 +21,20 @@ export default class MessageService {
     public buildQuestion (
         sentimentExtract: SentimentExtract,
         userId: string,
-        color: string = '#3AA3E3',
-        text: string = this.listService.getRandomItem(this.openers),
-        replace: boolean = false
+        options: {
+            text?: string,
+            replace?: boolean,
+            color?: string
+        } = {}
     ): Message {
         return {
-            replace_original: replace,
-            text: text,
+            replace_original: options.replace || false,
+            text: options.text || this.listService.getRandomItem(this.openers),
             attachments: [
                 {
                     text: `"${sentimentExtract.text}"`,
                     callback_id: `question:${sentimentExtract._id}:${userId}`,
-                    color: color,
+                    color: options.color || '#3AA3E3',
                     actions: [
                         {
                             name: 'sentiment',

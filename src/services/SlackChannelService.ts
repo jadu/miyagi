@@ -1,6 +1,6 @@
 import { WebClient } from '@slack/client';
 import { LoggerInstance } from 'winston';
-import { ImOpenResponse, Channel, User, Message } from '../interfaces/Slack';
+import { ImOpenResponse, Channel, User, Message, MessageResponse } from '../interfaces/Slack';
 
 export default class SlackChannelService {
     constructor (
@@ -54,7 +54,11 @@ export default class SlackChannelService {
         });
     }
 
-    public async updateMessage (messageTimestamp: string, channeId: string, newMessage: Message): Promise<any> {
+    public async updateMessage (
+        messageTimestamp: string,
+        channeId: string,
+        newMessage: Message
+    ): Promise<MessageResponse> {
         return await this.client.chat.update(
             messageTimestamp,
             channeId,

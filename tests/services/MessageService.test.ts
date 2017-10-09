@@ -77,7 +77,13 @@ describe('MessageService', () => {
 
         test('should build a message object using custom config', () => {
             const message: Message = messageService.buildQuestion(
-                sentimentExtract, 'user_id', '#bada55', 'custom text', true
+                sentimentExtract,
+                'user_id',
+                {
+                    color: '#bada55',
+                    text: 'custom text',
+                    replace: true
+                }
             );
 
             expect(message).toEqual({

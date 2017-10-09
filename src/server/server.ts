@@ -9,6 +9,7 @@ import SlackAuthenticationService from '../services/SlackAuthenticationService';
 import { WebClient } from '@slack/client';
 import MiyagiFactory from '../factories/MiyagiFactory';
 import Miyagi from '../services/Miyagi';
+import DatabaseServiceFactory from '../factories/DatabaseServiceFactory';
 
 const logger = new Logger({
     level: 'debug',
@@ -27,7 +28,10 @@ const PORT = process.env.PORT || 4567;
  */
 
 // Database service
-const databaseService: DatabaseService = new DatabaseService(DATABASE_URL, new MongoClient(), logger);
+const databaseService: DatabaseService = DatabaseServiceFactory.create(
+    DATABASE_URL,
+    logger
+);
 // Slack Web API client
 const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
     SLACK_API_TOKEN, logger
@@ -44,9 +48,11 @@ export const miyagi: Miyagi = MiyagiFactory.create(
     slackAuthenticationService.getWebClient(),
     databaseService,
     logger,
-    ['Have you got 5 minutes to help us train our Machine Learning platform? Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
+    ['Have you got 5 minutes to help us train our Machine Learning platform?' +
+        'Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
     ['Thank you, would you like to play again?'],
-    ['Thank you for your help today, see you next time :wave:']
+    ['Thank you for your help today, see you next time :wave:'],
+    300000
 );
 
 /**
@@ -56,6 +62,11 @@ export const miyagi: Miyagi = MiyagiFactory.create(
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Start of day tasks
+(async function () {
+    miyagi.refresh();
+})();
 
 // Setup http server to receive slack POST requests
 app.post('/', async (req, res) => {
@@ -68,20 +79,31 @@ app.post('/', async (req, res) => {
 
     // limit those rates
     // @todo - factor this into a response service
-    setTimeout(() => {
-        if (value) {
-            miyagi.sendResponse(payload.original_message, payload.channel, payload.user, value);
-        } else {
-            miyagi.goodbye(payload.original_message, payload.channel);
-        }
+    setTimeout(async () => {
         res.status(200);
         res.send();
-    }, 1500);
+
+        if (value) {
+            // Update database with suggestion
+            databaseService.handleExtractSuggestion(extractId, userId, value);
+            // Send a new question to the current user
+            miyagi.trackSessionSuggestion(payload.user, value);
+            // TODO don't pass the full payload in here
+            miyagi.sendQuestion(payload.channel.id, payload.original_message.ts, payload.user);
+        } else {
+            // Say goodbye to the current user
+            await miyagi.sayGoodbye(payload.original_message, payload.channel, payload.user);
+            // Send a question to the new user
+            miyagi.sendQuestion();
+        }
+    }, 1000);
 });
 
-app.get('/cli/send_questions', (req, res) => {
+app.get('/cli/send_questions', async (req, res) => {
     try {
-        miyagi.sendQuestionsToAllUsers(req.query.debug || false);
+        miyagi.setDebug(req.query.debug);
+        await miyagi.refresh();
+        miyagi.sendQuestion();
         res.sendStatus(200);
     } catch (error) {
         logger.error(error);
