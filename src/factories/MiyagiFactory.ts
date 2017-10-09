@@ -1,4 +1,4 @@
-import Miyagi from '../bot/bot';
+import Miyagi from '../services/Miyagi';
 import SlackUserService from '../services/SlackUserService';
 import { LoggerInstance } from 'winston';
 import { WebClient } from '@slack/client';

@@ -1,25 +1,26 @@
-import { Channel } from '../../src/interfaces/Channel';
 import SlackChannelService from '../../src/services/SlackChannelService';
 import { Logger, LoggerInstance } from 'winston';
-import MessageService from '../../src/providers/MessageService';
-import { User } from '../../src/interfaces/User';
 import { SentimentExtract } from '../../src/interfaces/SentimentExtract';
 import { mock, instance, when, verify } from 'ts-mockito';
-import { Question, ImOpenResponse } from '../../src/interfaces/Slack';
+import MessageService from '../../src/services/MessageService';
+import { Channel, User, ImOpenResponse, Message } from '../../src/interfaces/Slack';
 
 describe('SlackChannelService', () => {
     let client;
     let slackChannelService: SlackChannelService;
     let logger: LoggerInstance;
-    let MessageService: MessageService;
+    let messageService: MessageService;
 
     beforeEach(() => {
         client = {
             channels: { list: jest.fn() }, im: { open: jest.fn() }, chat: { postMessage: jest.fn() }
         };
-        MessageService = mock(MessageService);
+        messageService = mock(MessageService);
         logger = new Logger();
-        slackChannelService = new SlackChannelService(client, logger, instance(MessageService));
+        slackChannelService = new SlackChannelService(
+            client,
+            logger
+        );
     });
 
     describe('getChannel', () => {
@@ -64,7 +65,7 @@ describe('SlackChannelService', () => {
         let user: User;
         let extract: SentimentExtract;
         let channel: Channel;
-        let question: Question;
+        let message: Message;
         let imOpenResponse: ImOpenResponse;
 
         beforeEach(() => {
@@ -84,7 +85,7 @@ describe('SlackChannelService', () => {
                 id: '5678'
             };
             imOpenResponse = { channel };
-            question = {
+            message = {
                 text: 'foo',
                 attachments: [
                     {
@@ -104,13 +105,12 @@ describe('SlackChannelService', () => {
             };
 
             client.im.open.mockReturnValue(Promise.resolve(imOpenResponse));
-            when(MessageService.build(extract, user.id)).thenReturn(question);
         });
 
         test('should invoke the client and open a direct message channel', () => {
             expect.assertions(2);
 
-            return slackChannelService.sendDirectMessage(user, extract).then(() => {
+            return slackChannelService.sendDirectMessage(user, message).then(() => {
                 expect(client.im.open).toHaveBeenCalledTimes(1);
                 expect(client.im.open).toHaveBeenCalledWith('1234');
             });
@@ -121,18 +121,18 @@ describe('SlackChannelService', () => {
 
             client.im.open.mockReturnValue(Promise.reject('could not open direct message channel'));
 
-            return slackChannelService.sendDirectMessage(user, extract).catch((error: string) => {
+            return slackChannelService.sendDirectMessage(user, message).catch((error: string) => {
                 expect(error).toEqual('could not open direct message channel');
             });
         });
 
-        test('should invoke the client and send a question to the channel', () => {
+        test('should invoke the client and send a message to the channel', () => {
             expect.assertions(2);
 
-            return slackChannelService.sendDirectMessage(user, extract).then(() => {
+            return slackChannelService.sendDirectMessage(user, message).then(() => {
                 expect(client.chat.postMessage).toHaveBeenCalledTimes(1);
                 expect(client.chat.postMessage).toHaveBeenCalledWith(
-                    channel.id, question.text, { attachments: question.attachments }
+                    channel.id, message.text, { attachments: message.attachments }
                 );
             });
         });

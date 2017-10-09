@@ -1,9 +1,8 @@
 import SlackUserService from '../../src/services/SlackUserService';
 import SlackChannelService from '../../src/services/SlackChannelService';
 import { mock, instance, when, verify } from 'ts-mockito';
-import { Channel } from '../../src/interfaces/Channel';
 import { Logger } from 'winston';
-import { UserResponse, User } from '../../src/interfaces/User';
+import { Channel, UserResponse } from '../../src/interfaces/Slack';
 
 describe('SlackUserService', () => {
     const client = { users: { info: jest.fn() } };

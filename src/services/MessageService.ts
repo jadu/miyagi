@@ -21,6 +21,7 @@ export default class MessageService {
     public buildQuestion (
         sentimentExtract: SentimentExtract,
         userId: string,
+        color: string = '#3AA3E3',
         text: string = this.listService.getRandomItem(this.openers),
         replace: boolean = false
     ): Message {
@@ -31,7 +32,7 @@ export default class MessageService {
                 {
                     text: `"${sentimentExtract.text}"`,
                     callback_id: `question:${sentimentExtract._id}:${userId}`,
-                    color: '#3AA3E3',
+                    color: color,
                     actions: [
                         {
                             name: 'sentiment',
@@ -68,33 +69,6 @@ export default class MessageService {
         };
     }
 
-    public updateQuestion (message: Message, userId: string): Message {
-        return Object.assign({}, message, {
-            replace_original: true,
-            attachments: [
-                {
-                    text: this.listService.getRandomItem(this.closers),
-                    color: '#F6A623',
-                    callback_id: `request:null:${userId}`,
-                    actions: [
-                        {
-                            name: 'request',
-                            text: 'Yes',
-                            type: 'button',
-                            value: 'yes'
-                        },
-                        {
-                            name: 'sentiment',
-                            text: 'No',
-                            type: 'button',
-                            value: 'no'
-                        }
-                    ]
-                }
-            ]
-        });
-    }
-
     public endConversation (message: Message): Message {
         return Object.assign({}, message, {
             replace_original: true,
@@ -102,7 +76,7 @@ export default class MessageService {
             attachments: [
                 {
                     text: this.listService.getRandomItem(this.enders),
-                    color: '#3AA3E3'
+                    color: message.attachments[0].color
                 }
             ]
         });

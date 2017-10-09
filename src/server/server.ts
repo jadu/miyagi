@@ -8,7 +8,7 @@ import DatabaseService from '../services/DatabaseService';
 import SlackAuthenticationService from '../services/SlackAuthenticationService';
 import { WebClient } from '@slack/client';
 import MiyagiFactory from '../factories/MiyagiFactory';
-import Miyagi from '../bot/bot';
+import Miyagi from '../services/Miyagi';
 
 const logger = new Logger({
     level: 'debug',
@@ -64,7 +64,7 @@ app.post('/', async (req, res) => {
     const [ type, extractId, userId ]: string[] = payload.callback_id.split(':');
     const value = payload.actions[0].value;
 
-    logger.debug(`Got a "${type}" response from "${payload.user.name}"`);
+    logger.debug(`Got a "${value ? value : 'I\'ve had enough'}" response from "${payload.user.name}"`);
 
     // limit those rates
     // @todo - factor this into a response service
