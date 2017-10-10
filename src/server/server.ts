@@ -48,7 +48,7 @@ export const miyagi: Miyagi = MiyagiFactory.create(
     slackAuthenticationService.getWebClient(),
     databaseService,
     logger,
-    ['Have you got 5 minutes to help us train our Machine Learning platform?' +
+    ['Have you got 5 minutes to help us train our Machine Learning platform? ' +
         'Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
     ['Thank you, would you like to play again?'],
     ['Thank you for your help today, see you next time :wave:'],

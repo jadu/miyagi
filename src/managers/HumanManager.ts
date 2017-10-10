@@ -51,9 +51,9 @@ export default class HumanManager {
 
             if (debug) {
                 this.humans = [
-                    Object.assign({}, this.admin, { name: 'foo' }),
-                    Object.assign({}, this.admin, { name: 'bar' }),
-                    Object.assign({}, this.admin, { name: 'baz' })
+                    Object.assign({}, this.admin, { name: 'foo', real_name: 'foo' }),
+                    Object.assign({}, this.admin, { name: 'bar', real_name: 'bar' }),
+                    Object.assign({}, this.admin, { name: 'baz', real_name: 'baz' })
                 ];
             }
 
@@ -63,15 +63,25 @@ export default class HumanManager {
         }
     }
 
-    public getNextHuman (): User|undefined {
-        const human: User = this.listService.getRandomItem(this.humans);
+    public async getNextHuman (): Promise<User|undefined> {
+        const onlineHumans: User[] = [];
 
-        if (human) {
-            this.humans.splice(this.humans.indexOf(human), 1);
-            this.logger.debug(`Randomly selected next human "${human.name}"`);
+        for (const human of this.humans) {
+            const active = await this.slackUserService.userActive(human);
+
+            if (active) {
+                onlineHumans.push(human);
+            }
         }
 
-        return human;
+        const nextHuman: User = this.listService.getRandomItem(onlineHumans);
+
+        if (nextHuman) {
+            this.humans.splice(this.humans.indexOf(nextHuman), 1);
+            this.logger.debug(`Randomly selected next human "${nextHuman.name}"`);
+        }
+
+        return nextHuman;
     }
 
     public startInteractionTimeout (

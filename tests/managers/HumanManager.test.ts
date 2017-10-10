@@ -1,6 +1,6 @@
 import HumanManager from '../../src/managers/HumanManager';
 import SlackUserService from '../../src/services/SlackUserService';
-import { mock, instance, when, deepEqual } from 'ts-mockito';
+import { mock, instance, when, deepEqual, verify } from 'ts-mockito';
 import { LoggerInstance, Logger } from 'winston';
 import { User } from '../../src/interfaces/Slack';
 import { Suggestion } from '../../src/interfaces/SentimentExtract';
@@ -83,22 +83,49 @@ describe('HumanManager', () => {
     });
 
     describe('getNextHuman', () => {
-        test('should get next human if we have one', () => {
+        test('should get next human if we have one and they are online', () => {
+            const usersClone = [...users];
+
             expect.assertions(2);
-            when(listService.getRandomItem(deepEqual(users))).thenReturn(users[0]);
+
+            when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(true));
+            when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(true));
+            when(listService.getRandomItem(deepEqual(usersClone))).thenReturn(usersClone[0]);
 
             return humanManager.fetch('test', false).then(() => {
-                expect(humanManager.getNextHuman()).toEqual({ name: 'test_user_1', id: 'test_id_1' });
-                expect(humanManager.getHumans()).toHaveLength(1);
+                return humanManager.getNextHuman().then((human: User) => {
+                    expect(human).toEqual({ name: 'test_user_1', id: 'test_id_1' });
+                    expect(humanManager.getHumans()).toHaveLength(1);
+                });
+            });
+        });
+
+        test('should only get online humans', () => {
+            const usersClone = [...users];
+
+            when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(false));
+            when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(true));
+            when(listService.getRandomItem(deepEqual([usersClone[1]]))).thenReturn(usersClone[1]);
+
+            return humanManager.fetch('test', false).then(() => {
+                return humanManager.getNextHuman().then((human: User) => {
+                    verify(listService.getRandomItem(deepEqual([usersClone[1]]))).called();
+                });
             });
         });
 
         test('should return undefined if we have ran out of humans', () => {
+            const usersClone = [...users];
+
             expect.assertions(1);
-            when(listService.getRandomItem(deepEqual(users))).thenReturn(undefined);
+            when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(false));
+            when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(false));
+            when(listService.getRandomItem(deepEqual([]))).thenReturn(undefined);
 
             return humanManager.fetch('test', false).then(() => {
-                expect(humanManager.getNextHuman()).toBeUndefined();
+                return humanManager.getNextHuman().then((human: User) => {
+                    expect(human).toBeUndefined();
+                });
             });
         });
     });

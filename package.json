@@ -34,6 +34,7 @@
   },
   "scripts": {
     "tsc": "tsc",
+    "tsc:watch": "tsc --watch",
     "watch": "nodemon ./dist/server.bundle.js",
     "test": "jest",
     "test:watch": "jest --watch --coverage",

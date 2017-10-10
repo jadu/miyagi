@@ -47,7 +47,7 @@ export default class Miyagi {
         user?: User
     ): Promise<any>  {
         // Get a human from args (payload) or fetch a fresh one from the manager
-        const human: User = user ? user : this.humanManager.getNextHuman();
+        const human: User = user ? user : await this.humanManager.getNextHuman();
 
         if (!human) {
             // If we have ran out of humans, log the session statistics and end the process
