@@ -1,24 +1,23 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
-export default class Authentication extends React.Component {
-    handleAnnonymousLogin () {
-        this.props.authenticationService.setAuthenticated(true);
-        this.setState({ redirectToReferrer: true });
-    }
-
+export default class Login extends React.Component {
     constructor (props) {
         super(props);
-        console.log(props);
 
         this.state = {
             redirectToReferrer: false
         };
     }
 
+    handleAnnonymousLogin () {
+        this.props.authenticationService.authenticateWithAnnonymous();
+        this.setState({ redirectToReferrer: true });
+    }
+
     render () {
-        const { from } = this.props.location.state || { from: { pathname: '/' } }
-        const { redirectToReferrer } = this.state
+        const { from } = this.props.location.state || { from: { pathname: '/' } };
+        const { redirectToReferrer } = this.state;
 
         if (redirectToReferrer) {
           return (

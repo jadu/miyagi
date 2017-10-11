@@ -8,6 +8,7 @@ module.exports = (env = {}) => {
             output: {
                 path: path.join(__dirname, 'www/dist'),
                 filename: 'client.bundle.js',
+                publicPath: '/'
             },
             module: {
                 rules: [
@@ -20,7 +21,10 @@ module.exports = (env = {}) => {
                     filename: 'index.html',
                     inject: 'body'
                 })
-            ]
+            ],
+            devServer: {
+                historyApiFallback: true
+            }
         },
         'node': {
             entry: path.join(__dirname, 'src/server/server.ts'),
