@@ -1,22 +1,23 @@
 export default class AuthenticationService {
     constructor () {
         this.authenticated = false;
+        this.token = '';
     }
 
     authenticateWithParams (params) {
-        let authenticated = false;
+        let token = false;
 
         if (params && typeof params === 'string') {
             const test = params.match(/code=([A-Za-z\.0-9]+)/i);
 
-            authenticated = test.length ? test[1] : false;
+            token = test.length ? test[1] : false;
         }
 
-        this.authenticated = authenticated;
+        this.token = token;
     }
 
     authenticateWithAnnonymous () {
-        this.authenticated = 'annonymous';
+        this.authenticated = true;
     }
 
     getAuthenticated () {
