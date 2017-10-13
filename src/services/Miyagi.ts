@@ -31,7 +31,7 @@ export default class Miyagi {
     }
 
     public async refresh (channel: string = 'general'): Promise<void> {
-        this.logger.debug(`Refreahing Miyagi${this.debug && ' in debug mode'}`);
+        this.logger.debug(`Refreshing Miyagi${this.debug ? ' in debug mode' : ''}`);
         this.humanManager.resetSessionSuggestions();
 
         try {
