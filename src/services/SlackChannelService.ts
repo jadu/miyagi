@@ -8,32 +8,28 @@ export default class SlackChannelService {
         private logger: LoggerInstance
     ) {}
 
-    public getChannel (channelName: string): Promise<Channel> {
-        return new Promise(async (
-            resolve: (value: Channel) => void,
-            reject: (value: string) => void
-        ) => {
-            let channels: Channel[];
+    public async getChannel (channelName: string): Promise<Channel> {
+        let channels: Channel[];
 
-            // Get all channels
-            try {
-                channels = (await this.client.channels.list()).channels;
-            } catch (error) {
-                return reject(error);
-            }
-
+        // Get all channels
+        try {
+            channels = (await this.client.channels.list()).channels;
             this.logger.log('debug', `Got ${channels.length} channels`);
+        } catch (error) {
+            this.logger.error(`Could not get channels from Slack`);
+        }
 
+        if (channels) {
             // Get channel by name
-            const channel: Channel|undefined = channels.find((c: Channel) => c.name === channelName);
+            const channel: Channel = channels.find((c: Channel) => c.name === channelName);
 
             if (channel !== undefined) {
                 this.logger.log('info', `Found the #${channelName} channel`);
-                return resolve(channel);
+                return channel;
             } else {
-                return reject(`Could not get the #${channelName} channel`);
+                this.logger.error(`Could not get the #${channelName} channel`);
             }
-        });
+        }
     }
 
     public sendDirectMessage (user: User, message: Message): Promise<any> {

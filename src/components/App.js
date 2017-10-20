@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { BrowserRouter, Route, Link, Redirect } from 'react-router-dom';
 import Login from './Login';
 import Sentiment from './Sentiment';

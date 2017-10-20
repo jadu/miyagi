@@ -6,7 +6,7 @@ module.exports = (env = {}) => {
         'web': {
             entry: path.join(__dirname, 'src/index.js'),
             output: {
-                path: path.join(__dirname, 'www/dist'),
+                path: path.join(__dirname, 'dist/www'),
                 filename: 'client.bundle.js',
                 publicPath: '/'
             },
@@ -36,6 +36,7 @@ module.exports = (env = {}) => {
             module: {
                 rules: [
                     { test: /\.ts?$/, use: 'ts-loader', exclude: /(node_modules|tests)/ },
+                    { test: /\.js?$/, loader: 'babel-loader', exclude: /node_modules/ },
                     { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' }
                 ]
             }

@@ -1,17 +1,17 @@
 import Miyagi from '../../src/services/Miyagi';
 import HumanManager from '../../src/managers/HumanManager';
 import SlackChannelService from '../../src/services/SlackChannelService';
-import { LoggerInstance, Logger } from 'winston';
 import MessageService from '../../src/services/MessageService';
 import DatabaseService from '../../src/services/DatabaseService';
 import ConversationService from '../../src/services/ConversationService';
 import { mock, instance, verify } from 'ts-mockito/lib/ts-mockito';
+import LoggerMock from '../mocks/Logger';
 
 describe('Miyagi', () => {
     let miyagi: Miyagi;
     let humanManager: HumanManager;
     let slackChannelService: SlackChannelService;
-    let logger: LoggerInstance;
+    let logger: LoggerMock;
     let messgeService: MessageService;
     let databaseService: DatabaseService;
     let conversationService: ConversationService;
@@ -19,7 +19,7 @@ describe('Miyagi', () => {
     beforeEach(() => {
         humanManager = mock(HumanManager);
         slackChannelService = mock(SlackChannelService);
-        logger = new Logger();
+        logger = new LoggerMock();
         messgeService = mock(MessageService);
         databaseService = mock(DatabaseService);
         conversationService = mock(ConversationService);
@@ -28,7 +28,7 @@ describe('Miyagi', () => {
             instance(slackChannelService),
             instance(messgeService),
             instance(databaseService),
-            logger,
+            logger as any,
             instance(conversationService)
         );
     });

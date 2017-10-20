@@ -1,44 +1,34 @@
 import HumanManager from '../../src/managers/HumanManager';
 import SlackUserService from '../../src/services/SlackUserService';
 import { mock, instance, when, deepEqual, verify } from 'ts-mockito';
-import { LoggerInstance, Logger } from 'winston';
 import { User } from '../../src/interfaces/Slack';
 import { Suggestion } from '../../src/interfaces/SentimentExtract';
 import ListService from '../../src/services/ListService';
+import LoggerMock from '../mocks/Logger';
 
 describe('HumanManager', () => {
     let humanManager: HumanManager;
     let slackUserService: SlackUserService;
-    let logger: LoggerInstance;
+    let logger: LoggerMock;
     let users: User[];
     let listService: ListService;
 
     beforeEach(() => {
         slackUserService = mock(SlackUserService);
         listService = mock(ListService);
-        logger = new Logger();
+        logger = new LoggerMock();
         users = [
             { name: 'test_user_1', id: 'test_id_1' },
             { name: 'test_user_2', id: 'test_id_2' }
         ];
         humanManager = new HumanManager(
             instance(slackUserService),
-            logger,
+            logger as any,
             instance(listService),
             100
         );
 
         when(slackUserService.getHumansFromChannel('test')).thenReturn(Promise.resolve(users));
-    });
-
-    describe('get number of cached humans', () => {
-        test('should return cached human length', () => {
-            expect.assertions(1);
-
-            return humanManager.fetch('test', false).then(() => {
-                expect(humanManager.getNumberOfCachedHumans()).toEqual(2);
-            });
-        });
     });
 
     describe('addSessionSuggestion, getSessionSuggestions', () => {
@@ -70,6 +60,12 @@ describe('HumanManager', () => {
         });
     });
 
+    describe('getActiveHumans', () => {
+        test('should return active humans', () => {
+            expect(humanManager.getActiveHumans()).toEqual([]);
+        });
+    });
+
     describe('fetch, getHumans',  () => {
         test('should fetch humans from channel', () => {
             expect.assertions(1);
@@ -79,7 +75,16 @@ describe('HumanManager', () => {
             });
         });
 
-        test('should handle an error fetching humans');
+        test('should handle an error fetching humans', () => {
+            expect.assertions(1);
+
+            when(slackUserService.getHumansFromChannel('test'))
+                .thenReturn(Promise.reject('Error'));
+
+            return humanManager.fetch('test', false).then(() => {
+                expect(logger.error).toHaveBeenCalledTimes(1);
+            });
+        });
     });
 
     describe('getNextHuman', () => {
@@ -125,6 +130,20 @@ describe('HumanManager', () => {
             return humanManager.fetch('test', false).then(() => {
                 return humanManager.getNextHuman().then((human: User) => {
                     expect(human).toBeUndefined();
+                });
+            });
+        });
+
+        test('should handle an error getting a user\'s presence', () => {
+            const usersClone = [...users];
+
+            expect.assertions(1);
+            when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.reject('Error'));
+            when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.reject('Error'));
+
+            return humanManager.fetch('test', false).then(() => {
+                return humanManager.getNextHuman().then(() => {
+                    expect(logger.error).toHaveBeenCalledTimes(2);
                 });
             });
         });

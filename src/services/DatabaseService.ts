@@ -42,14 +42,19 @@ export default class DatabaseService {
     public async getNextExtract (userId: string): Promise<SentimentExtract> {
         try {
             await this.connect();
-            const extracts: SentimentExtract[] = await this.connection.collection('extracts').find().toArray();
-            const unique: SentimentExtract|undefined = extracts.find((extract: SentimentExtract) => {
+
+            // Get 100 random extracts from the database
+            const extracts: SentimentExtract[] = await this.connection.collection('extracts').aggregate([
+                { $sample: { size: 100 } }
+            ]).toArray();
+            // Try to get a unique extract from the database
+            const unique: SentimentExtract[] = extracts.filter((extract: SentimentExtract) => {
                 return !extract.suggestions.find((suggestion: Suggestion) => {
                     return suggestion.user_id === userId;
                 });
             });
 
-            return unique ? unique : this.listService.getRandomItem(extracts);
+            return unique.length ? this.listService.getRandomItem(unique) : extracts[0];
         } finally {
             this.close();
         }

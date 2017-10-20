@@ -1,13 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es2015",
+        "target": "ES2015",
         "module": "commonjs",
         "outDir": "dist",
         "sourceMap": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "allowJs": true,
+        "jsx": "react",
+        "lib": [
+            "es2016"
+        ]
     },
     "files": [
         "src/server/server.ts",
+        "src/server/api.ts",
         "src/fixtures/fixtures.ts"
     ],
     "exclude": [

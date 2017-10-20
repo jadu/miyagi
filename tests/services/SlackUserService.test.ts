@@ -1,18 +1,22 @@
 import SlackUserService from '../../src/services/SlackUserService';
 import SlackChannelService from '../../src/services/SlackChannelService';
 import { mock, instance, when, verify } from 'ts-mockito';
-import { Logger } from 'winston';
 import { Channel, UserResponse } from '../../src/interfaces/Slack';
+import LoggerMock from '../mocks/Logger';
 
 describe('SlackUserService', () => {
     const client = { users: { info: jest.fn() } };
-    const logger = new Logger();
+    const logger = new LoggerMock();
     let slackUserService: SlackUserService;
     let slackChannelService: SlackChannelService;
 
     beforeEach(() => {
         slackChannelService = mock(SlackChannelService);
-        slackUserService = new SlackUserService(client, logger, instance(slackChannelService));
+        slackUserService = new SlackUserService(
+            client,
+            logger as any,
+            instance(slackChannelService)
+        );
     });
 
     describe('getHumansFromChannel', () => {

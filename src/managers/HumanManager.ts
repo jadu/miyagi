@@ -5,7 +5,7 @@ import { Suggestion } from '../interfaces/SentimentExtract';
 import ListService from '../services/ListService';
 
 export default class HumanManager {
-    private humanCache: number;
+    private activeHumans: User[];
     private suggestions: Suggestion[];
     private timeout: NodeJS.Timer|null;
     private humans: User[];
@@ -18,14 +18,15 @@ export default class HumanManager {
         private interactionTimeout: number
     ) {
         this.suggestions = [];
+        this.activeHumans = [];
     }
 
     public getHumans (): User[] {
         return this.humans;
     }
 
-    public getNumberOfCachedHumans (): number {
-        return this.humanCache;
+    public getActiveHumans (): User[] {
+        return this.activeHumans;
     }
 
     public addSessionSuggestion (userId: string, name: string, value: string): void {
@@ -52,12 +53,10 @@ export default class HumanManager {
             if (debug) {
                 this.humans = [
                     Object.assign({}, this.admin, { name: 'foo', real_name: 'foo' }),
-                    Object.assign({}, this.admin, { name: 'bar', real_name: 'bar' }),
+                    Object.assign({}, this.admin,  { name: 'bar', real_name: 'bar' }),
                     Object.assign({}, this.admin, { name: 'baz', real_name: 'baz' })
                 ];
             }
-
-            this.humanCache = this.humans.length;
         } catch (error) {
             this.logger.error(error);
         }
@@ -67,7 +66,13 @@ export default class HumanManager {
         const onlineHumans: User[] = [];
 
         for (const human of this.humans) {
-            const active = await this.slackUserService.userActive(human);
+            let active: boolean;
+
+            try {
+                active = await this.slackUserService.userActive(human);
+            } catch (error) {
+                this.logger.error(`Could not determine if a user is active "${human.name}"`);
+            }
 
             if (active) {
                 onlineHumans.push(human);
@@ -79,6 +84,10 @@ export default class HumanManager {
         if (nextHuman) {
             this.humans.splice(this.humans.indexOf(nextHuman), 1);
             this.logger.debug(`Randomly selected next human "${nextHuman.name}"`);
+
+            if (!this.activeHumans.find((u: User) => u.id === nextHuman.id)) {
+                this.activeHumans.push(nextHuman);
+            }
         }
 
         return nextHuman;

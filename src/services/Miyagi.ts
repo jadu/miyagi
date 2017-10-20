@@ -47,22 +47,34 @@ export default class Miyagi {
         user?: User
     ): Promise<any>  {
         // Get a human from args (payload) or fetch a fresh one from the manager
-        const human: User = user ? user : await this.humanManager.getNextHuman();
+        let human: User;
+
+        try {
+            human = user ? user : await this.humanManager.getNextHuman();
+        } catch (error) {
+            this.logger.error('Could not get next human', error);
+        }
 
         if (!human) {
             // If we have ran out of humans, log the session statistics and end the process
             this.logger.info(`Got ${this.humanManager.getSessionSuggestions().length} ` +
-                `suggestions from ${this.humanManager.getNumberOfCachedHumans()} humans in this session`);
+                `suggestions from ${this.humanManager.getActiveHumans().length} humans in this session`);
             process.exit(0);
             return;
         }
 
         // Build next question
-        const question: Message = this.messageService.buildQuestion(
-            await this.databaseService.getNextExtract(human.id),
-            human.id,
-            { replace: !!user }
-        );
+        let question: Message;
+
+        try {
+            question = this.messageService.buildQuestion(
+                await this.databaseService.getNextExtract(human.id),
+                human.id,
+                { replace: !!user }
+            );
+        } catch (error) {
+            this.logger.error('Could not build question', error);
+        }
 
         // Store the next message we will send
         let nextMessage: MessageResponse;

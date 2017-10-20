@@ -1,14 +1,14 @@
 import SlackChannelService from '../../src/services/SlackChannelService';
-import { Logger, LoggerInstance } from 'winston';
 import { SentimentExtract } from '../../src/interfaces/SentimentExtract';
 import { mock, instance, when, verify } from 'ts-mockito';
 import MessageService from '../../src/services/MessageService';
 import { Channel, User, ImOpenResponse, Message } from '../../src/interfaces/Slack';
+import LoggerMock from '../mocks/Logger';
 
 describe('SlackChannelService', () => {
     let client;
     let slackChannelService: SlackChannelService;
-    let logger: LoggerInstance;
+    let logger: LoggerMock;
     let messageService: MessageService;
 
     beforeEach(() => {
@@ -16,10 +16,10 @@ describe('SlackChannelService', () => {
             channels: { list: jest.fn() }, im: { open: jest.fn() }, chat: { postMessage: jest.fn() }
         };
         messageService = mock(MessageService);
-        logger = new Logger();
+        logger = new LoggerMock();
         slackChannelService = new SlackChannelService(
             client,
-            logger
+            logger as any
         );
     });
 
@@ -43,20 +43,23 @@ describe('SlackChannelService', () => {
             });
         });
 
-        test('should throw if we cannot get the channel', () => {
-            expect.assertions(1);
-
-            return slackChannelService.getChannel('non-existent').catch((error: string) => {
-                expect(error).toBeTruthy();
-            });
-        });
-
         test('should throw if the client fails to get channels', () => {
             expect.assertions(1);
+
             client.channels.list.mockReturnValue(Promise.reject('channel list error'));
 
             return slackChannelService.getChannel('non-existent').catch((error: string) => {
                 expect(error).toEqual('channel list error');
+            });
+        });
+
+        test('should throw if we cannot get the channel', () => {
+            expect.assertions(1);
+
+            client.channels.list.mockReturnValue(Promise.resolve({ channels: ['general'] }));
+
+            return slackChannelService.getChannel('non-existent').catch((error: string) => {
+                expect(error).toBeTruthy();
             });
         });
     });
