@@ -7,17 +7,18 @@ import MessageService from '../services/MessageService';
 import ListService from '../services/ListService';
 import DatabaseService from '../services/DatabaseService';
 import HumanManager from '../managers/HumanManager';
-import ConversationService from '../services/ConversationService';
+import ThreadService from '../services/ThreadService';
+import IdleService from '../services/IdleService';
 
 export default class MiyagiFactory {
-    public static create (
+    public create (
         webClient: WebClient,
         databaseService: DatabaseService,
         logger: LoggerInstance,
         openers: string[],
         closers: string[],
         enders: string[],
-        interactionTimeout: number = 10000
+        idleTimeout: number
     ): Miyagi {
         const listService: ListService = new ListService();
         const messageService: MessageService = new MessageService(
@@ -38,23 +39,24 @@ export default class MiyagiFactory {
         const humanManager: HumanManager = new HumanManager(
             userService,
             logger,
-            listService,
-            interactionTimeout
+            listService
         );
-        const conversationService: ConversationService = new ConversationService(
-            humanManager,
-            logger,
-            channelService,
-            messageService
+        const threadService: ThreadService = new ThreadService(
+            messageService,
+            databaseService,
+            channelService
+        );
+        const idleService: IdleService = new IdleService(
+            idleTimeout,
+            logger
         );
 
         return new Miyagi(
             humanManager,
-            channelService,
-            messageService,
             databaseService,
             logger,
-            conversationService
+            threadService,
+            idleService
         );
     }
 }

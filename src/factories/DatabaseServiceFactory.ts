@@ -4,7 +4,7 @@ import { LoggerInstance } from 'winston';
 import { MongoClient } from 'mongodb';
 
 export default class DatabaseServiceFactory {
-    public static create (
+    public create (
         url: string,
         logger: LoggerInstance
     ): DatabaseService {

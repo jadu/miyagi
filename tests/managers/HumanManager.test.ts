@@ -24,8 +24,7 @@ describe('HumanManager', () => {
         humanManager = new HumanManager(
             instance(slackUserService),
             logger as any,
-            instance(listService),
-            100
+            instance(listService)
         );
 
         when(slackUserService.getHumansFromChannel('test')).thenReturn(Promise.resolve(users));
@@ -66,123 +65,68 @@ describe('HumanManager', () => {
         });
     });
 
-    describe('fetch, getHumans',  () => {
-        test('should fetch humans from channel', () => {
-            expect.assertions(1);
-
-            return humanManager.fetch('test', false).then(() => {
-                expect(humanManager.getHumans()).toEqual(users);
+    describe('fetch',  () => {
+        test('should invoke slack user service to get humans', (done) => {
+            humanManager.fetch('test_channel', false).then(() => {
+                verify(slackUserService.getHumansFromChannel('test_channel')).called();
+                done();
             });
         });
 
-        test('should handle an error fetching humans', () => {
-            expect.assertions(1);
+        test('should catch error fetching humans', (done) => {
+            when(slackUserService.getHumansFromChannel('test_channel')).thenReturn(Promise.reject('error'));
 
-            when(slackUserService.getHumansFromChannel('test'))
-                .thenReturn(Promise.reject('Error'));
-
-            return humanManager.fetch('test', false).then(() => {
-                expect(logger.error).toHaveBeenCalledTimes(1);
+            humanManager.fetch('test_channel', false).then(() => {
+                expect(logger.error).toBeCalled();
+                done();
             });
         });
     });
 
     describe('getNextHuman', () => {
-        test('should get next human if we have one and they are online', () => {
+        test('should get next human if we have one and they are online', (done) => {
             const usersClone = [...users];
-
-            expect.assertions(2);
 
             when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(true));
             when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(true));
             when(listService.getRandomItem(deepEqual(usersClone))).thenReturn(usersClone[0]);
 
-            return humanManager.fetch('test', false).then(() => {
-                return humanManager.getNextHuman().then((human: User) => {
+            humanManager.fetch('test', false).then(() => {
+                humanManager.getNextHuman().then((human: User) => {
                     expect(human).toEqual({ name: 'test_user_1', id: 'test_id_1' });
-                    expect(humanManager.getHumans()).toHaveLength(1);
+                    done();
                 });
             });
         });
 
-        test('should only get online humans', () => {
+        test('should only get online humans', (done) => {
             const usersClone = [...users];
 
             when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(false));
             when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(true));
             when(listService.getRandomItem(deepEqual([usersClone[1]]))).thenReturn(usersClone[1]);
 
-            return humanManager.fetch('test', false).then(() => {
-                return humanManager.getNextHuman().then((human: User) => {
+            humanManager.fetch('test', false).then(() => {
+                humanManager.getNextHuman().then((human: User) => {
                     verify(listService.getRandomItem(deepEqual([usersClone[1]]))).called();
+                    done();
                 });
             });
         });
 
-        test('should return undefined if we have ran out of humans', () => {
+        test('should return undefined if we have ran out of humans', (done) => {
             const usersClone = [...users];
 
-            expect.assertions(1);
             when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.resolve(false));
             when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.resolve(false));
             when(listService.getRandomItem(deepEqual([]))).thenReturn(undefined);
 
-            return humanManager.fetch('test', false).then(() => {
-                return humanManager.getNextHuman().then((human: User) => {
+            humanManager.fetch('test', false).then(() => {
+                humanManager.getNextHuman().then((human: User) => {
                     expect(human).toBeUndefined();
+                    done();
                 });
             });
-        });
-
-        test('should handle an error getting a user\'s presence', () => {
-            const usersClone = [...users];
-
-            expect.assertions(1);
-            when(slackUserService.userActive(deepEqual(usersClone[0]))).thenReturn(Promise.reject('Error'));
-            when(slackUserService.userActive(deepEqual(usersClone[1]))).thenReturn(Promise.reject('Error'));
-
-            return humanManager.fetch('test', false).then(() => {
-                return humanManager.getNextHuman().then(() => {
-                    expect(logger.error).toHaveBeenCalledTimes(2);
-                });
-            });
-        });
-    });
-
-    describe('startInteractionTimeout', () => {
-        let next: () => Promise<void>;
-
-        beforeEach(() => {
-            next = jest.fn();
-            window.setTimeout = jest.fn(() => '1234');
-            window.clearTimeout = jest.fn();
-        });
-
-        test('should clear the current timeout if we have one', () => {
-            humanManager.startInteractionTimeout(next);
-            humanManager.startInteractionTimeout(next);
-
-            expect(window.clearTimeout).toHaveBeenCalledTimes(1);
-            expect(window.clearTimeout).toHaveBeenCalledWith('1234');
-        });
-
-        test('should set a timeout', () => {
-            humanManager.startInteractionTimeout(next);
-
-            expect(window.setTimeout).toHaveBeenCalledTimes(1);
-            expect(window.setTimeout).toHaveBeenCalledWith(next, 100);
-        });
-    });
-
-    describe('clearInteractionTimeout', () => {
-        beforeEach(() => {
-            window.clearTimeout = jest.fn();
-        });
-
-        test('should clear interaction timeout', () => {
-            humanManager.clearInteractionTimeout();
-
-            expect(window.clearTimeout).toHaveBeenCalledTimes(1);
         });
     });
 });

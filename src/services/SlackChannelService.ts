@@ -8,46 +8,27 @@ export default class SlackChannelService {
         private logger: LoggerInstance
     ) {}
 
-    public async getChannel (channelName: string): Promise<Channel> {
-        let channels: Channel[];
-
+    public async getChannel (channelName: string): Promise<Channel|undefined> {
         // Get all channels
-        try {
-            channels = (await this.client.channels.list()).channels;
-            this.logger.log('debug', `Got ${channels.length} channels`);
-        } catch (error) {
-            this.logger.error(`Could not get channels from Slack`);
-        }
+        const channels: Channel[] = (await this.client.channels.list()).channels;
+
+        this.logger.debug(`Got ${channels.length} channels`);
 
         if (channels) {
             // Get channel by name
             const channel: Channel = channels.find((c: Channel) => c.name === channelName);
 
-            if (channel !== undefined) {
-                this.logger.log('info', `Found the #${channelName} channel`);
-                return channel;
-            } else {
-                this.logger.error(`Could not get the #${channelName} channel`);
-            }
+            this.logger.debug(`Found the #${channelName} channel`);
+            return channel;
         }
     }
 
-    public sendDirectMessage (user: User, message: Message): Promise<any> {
-        return new Promise(async (
-            resolve: (value: any) => void,
-            reject: (value: string) => void
-        ) => {
-            try {
-                const { channel }: ImOpenResponse = await this.client.im.open(user.id);
-                const directMessage = await this.client.chat.postMessage(
-                    channel.id, message.text, { attachments: message.attachments }
-                );
+    public async sendDirectMessage (user: User, message: Message): Promise<MessageResponse> {
+        const { channel }: ImOpenResponse = await this.client.im.open(user.id);
 
-                return resolve(directMessage);
-            } catch (error) {
-                return reject(error);
-            }
-        });
+        return await this.client.chat.postMessage(
+            channel.id, message.text, { attachments: message.attachments }
+        );
     }
 
     public async updateMessage (
@@ -63,4 +44,3 @@ export default class SlackChannelService {
         );
     }
 }
-

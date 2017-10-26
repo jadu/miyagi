@@ -25,7 +25,7 @@ export default class DatabaseService {
         }
     }
 
-    public async handleExtractSuggestion (extractId: string, userId: string, value: string) {
+    public async updateExtractSuggestions (extractId: string, userId: string, value: string) {
         const suggestion: Suggestion = {
             user_id: userId,
             value: value

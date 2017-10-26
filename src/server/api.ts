@@ -10,7 +10,12 @@ import { WebClient } from '@slack/client';
 import MiyagiFactory from '../factories/MiyagiFactory';
 import Miyagi from '../services/Miyagi';
 import DatabaseServiceFactory from '../factories/DatabaseServiceFactory';
+import ResponseHandlerFactory from '../factories/ResponseHandlerFactory';
+import ResponseHandler from '../handlers/ResponseHandler';
 
+/**
+ * Logging
+ */
 const logger = new Logger({
     level: 'debug',
     transports: [new transports.Console()]
@@ -26,13 +31,11 @@ const PORT = process.env.PORT || 4567;
 /**
  * Services
  */
-
-// Database service
-const databaseService: DatabaseService = DatabaseServiceFactory.create(
+const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
     DATABASE_URL,
     logger
 );
-// Slack Web API client
+
 const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
     SLACK_API_TOKEN, logger
 );
@@ -43,8 +46,10 @@ try {
     logger.error(error);
 }
 
-// Miyagi instance
-export const miyagi: Miyagi = MiyagiFactory.create(
+/**
+ * Miyagi
+ */
+const miyagi: Miyagi = (new MiyagiFactory()).create(
     slackAuthenticationService.getWebClient(),
     databaseService,
     logger,
@@ -56,54 +61,30 @@ export const miyagi: Miyagi = MiyagiFactory.create(
 );
 
 /**
+ * Handlers
+ */
+const responseHandler: ResponseHandler = (new ResponseHandlerFactory()).create(
+    databaseService,
+    miyagi,
+    logger,
+    1000
+);
+
+/**
  * Server
  */
-
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Start of day tasks
-(async function () {
-    miyagi.refresh();
-})();
-
 // Setup http server to receive slack POST requests
-app.post('/', async (req, res) => {
-    // @todo validate slack app token !important
-    const payload: InteractiveComponentPayload = JSON.parse(req.body.payload);
-    const [ type, extractId, userId ]: string[] = payload.callback_id.split(':');
-    const value = payload.actions[0].value;
-
-    logger.debug(`Got a "${value ? value : 'I\'ve had enough'}" response from "${payload.user.name}"`);
-
-    // limit those rates
-    // @todo - factor this into a response service
-    setTimeout(async () => {
-        res.status(200);
-        res.send();
-
-        if (value) {
-            // Update database with suggestion
-            databaseService.handleExtractSuggestion(extractId, userId, value);
-            // Send a new question to the current user
-            miyagi.trackSessionSuggestion(payload.user, value);
-            // TODO don't pass the full payload in here
-            miyagi.sendQuestion(payload.channel.id, payload.original_message.ts, payload.user);
-        } else {
-            // Say goodbye to the current user
-            await miyagi.sayGoodbye(payload.original_message, payload.channel, payload.user);
-            // Send a question to the new user
-            miyagi.sendQuestion();
-        }
-    }, 1000);
-});
+app.post('/', responseHandler.respond.bind(responseHandler));
 
 app.get('/cli/send_questions', async (req, res) => {
     try {
         miyagi.setDebug(req.query.debug);
         await miyagi.refresh();
-        miyagi.sendQuestion();
+        miyagi.nextThread();
         res.sendStatus(200);
     } catch (error) {
         logger.error(error);
@@ -111,10 +92,10 @@ app.get('/cli/send_questions', async (req, res) => {
     }
 });
 
-app.get('/slack/auth', (req, res) => {
-    console.log(req.params.code);
-    res.redirect('/');
-});
+// app.get('/slack/auth', (req, res) => {
+//     console.log(req.params.code);
+//     res.redirect('/');
+// });
 
 app.get('/', (req, res) => {
     res.send('Listening for Slack interactions');

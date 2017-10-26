@@ -13,8 +13,7 @@
     },
     "files": [
         "src/server/server.ts",
-        "src/server/api.ts",
-        "src/fixtures/fixtures.ts"
+        "src/server/api.ts"
     ],
     "exclude": [
         "node_modules"

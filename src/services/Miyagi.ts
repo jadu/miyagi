@@ -1,27 +1,27 @@
 import { RtmClient, WebClient } from '@slack/client';
 import { Logger, LoggerInstance } from 'winston';
 import { SentimentExtract } from '../interfaces/SentimentExtract';
-import SlackChannelService from '../services/SlackChannelService';
-import MessageService from '../services/MessageService';
 import SlackUserService from '../services/SlackUserService';
 import DatabaseService from '../services/DatabaseService';
 import { User, Message, Channel, InteractiveComponentPayload, MessageResponse } from '../interfaces/Slack';
 import HumanManager from '../managers/HumanManager';
-import ConversationService from '../services/ConversationService';
+import Thread from '../interfaces/Thread';
+import ThreadService from './ThreadService';
+import IdleService from './IdleService';
 
 export default class Miyagi {
     private debug: boolean;
     private rtmClient: WebClient;
     private webClient: RtmClient;
     private token: string;
+    private thread: Thread;
 
     constructor (
         private humanManager: HumanManager,
-        private slackChannelService: SlackChannelService,
-        private messageService: MessageService,
         private databaseService: DatabaseService,
         private logger: LoggerInstance,
-        private conversationService: ConversationService
+        private threadService: ThreadService,
+        private idleService: IdleService
     ) {
         this.debug = false;
     }
@@ -41,81 +41,56 @@ export default class Miyagi {
         }
     }
 
-    public async sendQuestion (
-        channelId?: string,
-        messageTimestamp?: string,
-        user?: User
-    ): Promise<any>  {
-        // Get a human from args (payload) or fetch a fresh one from the manager
-        let human: User;
+    public async resumeThread (): Promise<void> {
+        this.idleService.clear();
+        this.logger.debug(`Resuming thread with "${this.thread.human.name}"`);
+        this.idleService.start(this.nextThread.bind(this));
 
         try {
-            human = user ? user : await this.humanManager.getNextHuman();
+            this.thread = await this.threadService.next(this.thread);
         } catch (error) {
-            this.logger.error('Could not get next human', error);
+            this.logger.error('Error progressing thread', error);
+        }
+    }
+
+    public async nextThread (): Promise<void> {
+        let human: User;
+
+        // clear the current timer
+        this.idleService.clear();
+
+        // get our next contestant
+        try {
+            human = await this.humanManager.getNextHuman();
+        } catch (error) {
+            this.logger.error('Error getting next human', error);
         }
 
-        if (!human) {
-            // If we have ran out of humans, log the session statistics and end the process
-            this.logger.info(`Got ${this.humanManager.getSessionSuggestions().length} ` +
-                `suggestions from ${this.humanManager.getActiveHumans().length} humans in this session`);
-            process.exit(0);
+        // close the current thread if it is defined
+        if (this.thread !== undefined) {
+            try {
+                await this.threadService.close(this.thread);
+                this.logger.debug(`Said goodbye to "${this.thread.human.name}"`);
+            } catch (error) {
+                this.logger.error(`Error saying goodbye to "${this.thread.human.name}"`, error);
+            }
+        }
+
+        if (human === undefined) {
+            this.logger.info('Done!');
             return;
         }
 
-        // Build next question
-        let question: Message;
+        // create a new thread
+        this.thread = this.threadService.create(human);
 
+        // start idle timer
+        this.idleService.start(this.nextThread.bind(this));
+        // start thread
         try {
-            question = this.messageService.buildQuestion(
-                await this.databaseService.getNextExtract(human.id),
-                human.id,
-                { replace: !!user }
-            );
+            this.thread = await this.threadService.next(this.thread);
         } catch (error) {
-            this.logger.error('Could not build question', error);
+            this.logger.error('Error progressing thread', error);
         }
-
-        // Store the next message we will send
-        let nextMessage: MessageResponse;
-
-        try {
-            if (user) {
-                // If we have a payload update the previous message with a new question
-                nextMessage = await this.slackChannelService.updateMessage(
-                    messageTimestamp,
-                    channelId,
-                    question
-                );
-                this.logger.info(`Sent another question to "${human.name}"`);
-            } else {
-                // Send a new message to new user
-                nextMessage = await this.slackChannelService.sendDirectMessage(human, question);
-                this.logger.info(`Sent a new question to "${human.name}"`);
-            }
-        } catch (error) {
-            this.logger.error(error);
-        }
-
-        // Start interaction timer, first argument will be invoked once the timer is complete
-        this.humanManager.startInteractionTimeout(async () => {
-            // Say Goodbye
-            await this.conversationService.goodbye(
-                human.name,
-                nextMessage.channel,
-                nextMessage.message
-            );
-
-            // Recursively invoke this method for the next user
-            return this.sendQuestion();
-        });
-    }
-
-    public trackSessionSuggestion (user: User, value: string): void {
-        this.humanManager.addSessionSuggestion(user.id, user.name, value);
-    }
-
-    public async sayGoodbye (message: Message, channel: Channel, user: User): Promise<void> {
-        this.conversationService.goodbye(user.name, channel.id, message);
     }
 }

@@ -39,11 +39,12 @@ export interface Attachment {
 export interface MessageResponse {
     channel: string;
     message: Message;
+    ts: string;
 }
 
 export interface Message {
-    replace_original?: boolean;
     text: string;
+    replace_original?: boolean;
     username?: string;
     bot_id?: string;
     type?: string;

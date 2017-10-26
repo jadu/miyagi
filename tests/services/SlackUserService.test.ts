@@ -1,7 +1,7 @@
 import SlackUserService from '../../src/services/SlackUserService';
 import SlackChannelService from '../../src/services/SlackChannelService';
 import { mock, instance, when, verify } from 'ts-mockito';
-import { Channel, UserResponse } from '../../src/interfaces/Slack';
+import { Channel, UserResponse, User } from '../../src/interfaces/Slack';
 import LoggerMock from '../mocks/Logger';
 
 describe('SlackUserService', () => {

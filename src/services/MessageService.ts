@@ -63,7 +63,8 @@ export default class MessageService {
                         {
                             name: 'sentiment',
                             text: ':no_entry_sign: I\'ve had enough',
-                            type: 'button'
+                            type: 'button',
+                            value: 'had_enough'
                         }
                     ]
                 }

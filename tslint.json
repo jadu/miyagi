@@ -14,7 +14,8 @@
         "object-literal-sort-keys": false,
         "object-literal-shorthand": false,
         "ordered-imports": false,
-        "no-unused-variable": [true, "error"],
+        "no-unused-variable": [true, "error"]
     },
-    "rulesDirectory": []
+    "rulesDirectory": [],
+    "exclude": "node_modules"
 }

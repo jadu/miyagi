@@ -14,15 +14,10 @@ export default class HumanManager {
     constructor (
         private slackUserService: SlackUserService,
         private logger: LoggerInstance,
-        private listService: ListService,
-        private interactionTimeout: number
+        private listService: ListService
     ) {
         this.suggestions = [];
         this.activeHumans = [];
-    }
-
-    public getHumans (): User[] {
-        return this.humans;
     }
 
     public getActiveHumans (): User[] {
@@ -51,11 +46,7 @@ export default class HumanManager {
             this.admin = Object.assign({}, this.humans.find((human: User) => human.is_admin));
 
             if (debug) {
-                this.humans = [
-                    Object.assign({}, this.admin, { name: 'foo', real_name: 'foo' }),
-                    Object.assign({}, this.admin,  { name: 'bar', real_name: 'bar' }),
-                    Object.assign({}, this.admin, { name: 'baz', real_name: 'baz' })
-                ];
+                this.humans = [this.admin, this.admin, this.admin];
             }
         } catch (error) {
             this.logger.error(error);
@@ -66,13 +57,7 @@ export default class HumanManager {
         const onlineHumans: User[] = [];
 
         for (const human of this.humans) {
-            let active: boolean;
-
-            try {
-                active = await this.slackUserService.userActive(human);
-            } catch (error) {
-                this.logger.error(`Could not determine if a user is active "${human.name}"`);
-            }
+            const active = await this.slackUserService.userActive(human);
 
             if (active) {
                 onlineHumans.push(human);
@@ -91,22 +76,5 @@ export default class HumanManager {
         }
 
         return nextHuman;
-    }
-
-    public startInteractionTimeout (
-        next: () => Promise<void>
-    ): void {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
-
-        this.logger.debug(`Waiting ${this.interactionTimeout}ms for a response`);
-        this.timeout = setTimeout(next, this.interactionTimeout);
-    }
-
-    public clearInteractionTimeout (): void {
-        this.logger.debug('Clearing interaction timeout');
-        clearTimeout(this.timeout);
-        this.timeout = null;
     }
 }
