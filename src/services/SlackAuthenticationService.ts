@@ -17,7 +17,7 @@ export default class SlackAuthenticationService {
         }
 
         try {
-            // Using this to indicate whether Miyagi is online and typing
+            // Using this to indicate whether Miyagi is online
             this.rtmClient = new RtmClient(this.token);
             this.rtmClient.start();
             // Establish WebAPI client

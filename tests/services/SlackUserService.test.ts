@@ -5,7 +5,12 @@ import { Channel, UserResponse, User } from '../../src/interfaces/Slack';
 import LoggerMock from '../mocks/Logger';
 
 describe('SlackUserService', () => {
-    const client = { users: { info: jest.fn() } };
+    const client = {
+        users: {
+            info: jest.fn(),
+            getPresence: jest.fn()
+        }
+    };
     const logger = new LoggerMock();
     let slackUserService: SlackUserService;
     let slackChannelService: SlackChannelService;
@@ -164,6 +169,40 @@ describe('SlackUserService', () => {
                 expect(humans).toEqual([
                     { id: '9010', is_bot: false, name: 'mike', real_name: 'mike' }
                 ]);
+            });
+        });
+    });
+
+    describe('userActive', () => {
+        const user: User = {
+            name: 'test_name',
+            id: 'test_id'
+        };
+
+        test('should return true if the user is present', (done) => {
+            client.users.getPresence.mockReturnValue(Promise.resolve({ presence: 'test' }));
+
+            slackUserService.userActive(user).then((active) => {
+                expect(active).toEqual(true);
+                done();
+            });
+        });
+
+        test('should return false if the user is away', (done) => {
+            client.users.getPresence.mockReturnValue(Promise.resolve({ presence: 'away' }));
+
+            slackUserService.userActive(user).then((active) => {
+                expect(active).toEqual(false);
+                done();
+            });
+        });
+
+        test('should return false if the user\'s presence can not be found', (done) => {
+            client.users.getPresence.mockReturnValue(Promise.resolve(undefined));
+
+            slackUserService.userActive(user).then((active) => {
+                expect(active).toEqual(false);
+                done();
             });
         });
     });

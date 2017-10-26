@@ -51,14 +51,12 @@ export default class SlackUserService {
     }
 
     public async userActive (user: User): Promise<boolean> {
-        try {
-            const { presence }: { presence: string } = await this.client.users.getPresence(user.id);
+        const response = await this.client.users.getPresence(user.id);
 
-            return presence.toLowerCase() !== 'away';
-        } catch (error) {
-            this.logger.error(`Could not get user presence for "${user.name}"`, error);
-            // return true if we get an error to allow the application to continue
-            return true;
+        if (response && response.presence && typeof response.presence === 'string') {
+            return response.presence.toLowerCase() !== 'away';
+        } else {
+            return false;
         }
     }
 }
