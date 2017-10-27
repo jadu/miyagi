@@ -59,7 +59,8 @@ describe('ThreadService', () => {
             // direct message stub
             when(slackChannelService.sendDirectMessage(deepEqual(human), nextMessage)).thenReturn(Promise.resolve({
                 ts: 'test_timestamp',
-                channel: 'test_channel_id'
+                channel: 'test_channel_id',
+                message: nextMessage
             }));
         });
 
