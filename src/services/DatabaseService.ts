@@ -54,6 +54,7 @@ export default class DatabaseService {
                 });
             });
 
+            // If there are no unique extracts in the random sample, return a duplicate
             return unique.length ? this.listService.getRandomItem(unique) : extracts[0];
         } finally {
             this.close();
