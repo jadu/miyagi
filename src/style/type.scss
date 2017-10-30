@@ -1,0 +1,13 @@
+body {
+    color: $color-copy-base;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.4;
+}
+
+p {
+    margin: 0 0 .75rem;
+
+    &:last-of-type {
+        margin-bottom: 0;
+    }
+}

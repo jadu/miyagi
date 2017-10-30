@@ -1,0 +1,18 @@
+.mr-miyagi {
+    bottom: 0;
+    position: fixed;
+    right: 0;
+    width: 25vw;
+}
+
+.mr-miyagi__image {
+    display: block;
+    width: 100%;
+}
+
+.miyagi {
+    display: flex;
+    flex-direction: column;
+    margin: 10vh auto auto;
+    width: 75vw;
+}

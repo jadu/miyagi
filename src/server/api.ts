@@ -12,6 +12,8 @@ import Miyagi from '../services/Miyagi';
 import DatabaseServiceFactory from '../factories/DatabaseServiceFactory';
 import ResponseHandlerFactory from '../factories/ResponseHandlerFactory';
 import ResponseHandler from '../handlers/ResponseHandler';
+import { SentimentExtract } from '../interfaces/SentimentExtract';
+import cors = require('cors');
 
 /**
  * Logging
@@ -40,11 +42,11 @@ const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenti
     SLACK_API_TOKEN, logger
 );
 
-try {
-    slackAuthenticationService.connect();
-} catch (error) {
-    logger.error(error);
-}
+// try {
+//     slackAuthenticationService.connect();
+// } catch (error) {
+//     logger.error(error);
+// }
 
 /**
  * Miyagi
@@ -76,6 +78,7 @@ const responseHandler: ResponseHandler = (new ResponseHandlerFactory()).create(
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors());
 
 // Setup http server to receive slack POST requests
 app.post('/', responseHandler.respond.bind(responseHandler));
@@ -99,6 +102,53 @@ app.get('/cli/send_questions', async (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('Listening for Slack interactions');
+});
+
+app.get('/miyapi/extract', async (req, res) => {
+    try {
+        const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
+
+        res.status(200);
+        res.send(JSON.stringify({
+            extract: {
+                _id: extract._id,
+                text: extract.text
+            },
+            error: false
+        }));
+    } catch (error) {
+        res.status(500);
+        res.send(JSON.stringify({
+            error: 'Could not get extract'
+        }));
+    }
+});
+
+app.post('/miyapi/extract', async (req, res) => {
+    try {
+        const { _id, value } = req.body;
+        const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
+
+        databaseService.updateExtractSuggestions(_id, 'ANONYMOUS', value);
+
+        res.status(200);
+        res.send(JSON.stringify({
+            extract: {
+                _id: extract._id,
+                text: extract.text
+            },
+            error: false
+        }));
+    } catch (error) {
+        res.status(500);
+        res.send(JSON.stringify({
+            error: 'Could not get extract'
+        }));
+    }
+});
+
+app.post('/miyapi/suggestion', (req, res) => {
+    res.sendStatus(200);
 });
 
 app.listen(PORT, () => {

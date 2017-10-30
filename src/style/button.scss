@@ -1,0 +1,17 @@
+.button {
+    background-color: white;
+    border: 1px solid $color-subtle;
+    border-radius: $global-border-radius;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: bold;
+    padding: .5rem;
+
+    &:not(:last-of-type) {
+        margin-right: 1rem;
+    }
+}
+
+.button__icon {
+    margin-right: .5rem;
+}

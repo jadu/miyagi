@@ -4,6 +4,9 @@ import Login from './Login';
 import Sentiment from './Sentiment';
 import AuthenticationService from './AuthenticationService';
 import ProtectedRoute from './ProtectedRoute';
+import Miyagi from './Miyagi';
+import TopBar from './TopBar';
+import MrMiagi from '../../assets/miyagi.png';
 
 const authenticationService = new AuthenticationService();
 
@@ -17,12 +20,18 @@ export default class App extends React.Component {
     render () {
         return (
             <BrowserRouter>
-                <div className="app">
-                    <pre>App</pre>
+                <div className="root__container">
+                    <TopBar/>
+                    <Miyagi/>
+                    <div className="mr-miyagi">
+                        <img src={MrMiagi} className="mr-miyagi__image"/>
+                    </div>
+
+                    {/* <pre>App</pre>
                     <Route path="/login" render={
                         props => <Login { ...props } authenticationService={authenticationService}/>
                     }/>
-                    <ProtectedRoute exact path="/" component={Sentiment} authenticationService={authenticationService}/>
+                    <ProtectedRoute exact path="/" component={Sentiment} authenticationService={authenticationService}/> */}
                 </div>
             </BrowserRouter>
         );
