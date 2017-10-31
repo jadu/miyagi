@@ -32,7 +32,7 @@ export default class Miyagi extends React.Component {
 
     getExtract () {
         reqwest({
-            url: 'http://localhost:4567/miyapi/extract',
+            url: 'miyapi/extract',
             method: 'get'
         }).then(this.updateExtractFromResponse.bind(this));
     }
@@ -40,7 +40,7 @@ export default class Miyagi extends React.Component {
     makeSuggestion (key) {
         return new Promise (resolve => {
             reqwest({
-                url: 'http://localhost:4567/miyapi/extract',
+                url: 'miyapi/extract',
                 method: 'post',
                 data: { _id: this.state.extractId, value: key, user_id: this.state.user }
             }).then(async res => {

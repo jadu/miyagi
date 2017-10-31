@@ -14,6 +14,7 @@ import ResponseHandlerFactory from '../factories/ResponseHandlerFactory';
 import ResponseHandler from '../handlers/ResponseHandler';
 import { SentimentExtract } from '../interfaces/SentimentExtract';
 import cors = require('cors');
+import path = require('path');
 
 /**
  * Logging
@@ -45,6 +46,7 @@ const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.resolve(process.cwd(), 'dist/www/')));
 app.use(cors());
 
 /**
@@ -89,7 +91,7 @@ if (SLACK_API_TOKEN !== null) {
     app.post('/', responseHandler.respond.bind(responseHandler));
 
     app.get('/', (req, res) => {
-        res.send('Listening for Slack interactions');
+        res.sendFile('index.html');
     });
 
     app.get('/cli/send_questions', async (req, res) => {
