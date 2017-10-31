@@ -35,7 +35,8 @@ const PORT = process.env.PORT || 4567;
  */
 const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
     DATABASE_URL,
-    logger
+    logger,
+    process.env.NODE_ENV !== 'poduction'
 );
 
 const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(

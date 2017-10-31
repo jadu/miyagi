@@ -5,19 +5,23 @@ import { InteractiveComponentPayload } from '../interfaces/Slack';
 import ListService from './ListService';
 
 export default class DatabaseService {
+    private extractCollection: string;
     private connection: Db;
 
     constructor (
         private url: string,
         private client: MongoClient,
         private logger: LoggerInstance,
-        private listService: ListService
-    ) {}
+        private listService: ListService,
+        private dev: string
+    ) {
+        this.extractCollection = this.dev ? 'extracts_dev' : 'extracts';
+    }
 
     public async getRandomExtracts (total: number): Promise<SentimentExtract[]> {
         try {
             await this.connect();
-            return await this.connection.collection('extracts').aggregate([
+            return await this.connection.collection(this.extractCollection).aggregate([
                 { $sample: { size: total } }
             ]).toArray();
         } finally {
@@ -32,7 +36,7 @@ export default class DatabaseService {
         };
 
         await this.connect();
-        return await this.connection.collection('extracts')
+        return await this.connection.collection(this.extractCollection)
             .findOneAndUpdate(
                 { _id : new ObjectId(extractId) },
                 { $push: { suggestions: suggestion }}
@@ -44,7 +48,7 @@ export default class DatabaseService {
             await this.connect();
 
             // Get 100 random extracts from the database
-            const extracts: SentimentExtract[] = await this.connection.collection('extracts').aggregate([
+            const extracts: SentimentExtract[] = await this.connection.collection(this.extractCollection).aggregate([
                 { $sample: { size: 100 } }
             ]).toArray();
             // Try to get a unique extract from the database
