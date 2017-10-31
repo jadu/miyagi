@@ -90,10 +90,6 @@ if (SLACK_API_TOKEN !== null) {
     // Setup http server to receive slack POST requests
     app.post('/', responseHandler.respond.bind(responseHandler));
 
-    app.get('/', (req, res) => {
-        res.sendFile('index.html');
-    });
-
     app.get('/cli/send_questions', async (req, res) => {
         try {
             miyagi.setDebug(req.query.debug);
@@ -152,6 +148,14 @@ app.post('/miyapi/extract', async (req, res) => {
 
 app.post('/miyapi/suggestion', (req, res) => {
     res.sendStatus(200);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile('index.html');
+});
+
+app.get('*', (req, res) => {
+    res.redirect('/');
 });
 
 app.listen(PORT, () => {
