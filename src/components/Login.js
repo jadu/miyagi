@@ -16,8 +16,6 @@ export default class Login extends React.Component {
         const anonymous = false;
         const value = this.refs.name.value.trim();
 
-        console.log(value, anonymous)
-
         if (value || anonymous) {
             this.props.authenticationService.authenticate(anonymous ? null : value);
             this.setState({ redirectToReferrer: true, error: '' });

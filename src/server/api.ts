@@ -107,11 +107,6 @@ if (SLACK_API_TOKEN !== null) {
     });
 }
 
-// app.get('/slack/auth', (req, res) => {
-//     console.log(req.params.code);
-//     res.redirect('/');
-// });
-
 app.get('/miyapi/extract', async (req, res) => {
     try {
         const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];

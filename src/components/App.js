@@ -10,13 +10,7 @@ import MrMiagi from '../../assets/miyagi.png';
 
 const authenticationService = new AuthenticationService();
 
-// authenticationService.setAuthenticated(true);
-
 export default class App extends React.Component {
-    handleSlackToken (token) {
-        console.log('handling slack athenticaton: ', token);
-    }
-
     render () {
         return (
             <BrowserRouter>

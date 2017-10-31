@@ -12,8 +12,6 @@ export default class Miyagi extends React.Component {
     constructor (props) {
         super(props);
 
-        console.log(props)
-
         this.state = {
             extract: '',
             extractId: '',
