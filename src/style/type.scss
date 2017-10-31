@@ -1,3 +1,9 @@
+%type {
+    color: $color-copy-base;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.4;
+}
+
 body {
     color: $color-copy-base;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -7,7 +13,11 @@ body {
 p {
     margin: 0 0 .75rem;
 
-    &:last-of-type {
+    &:last-of-type:not(:first-of-type) {
         margin-bottom: 0;
     }
+}
+
+.error {
+    color: $color-error;
 }

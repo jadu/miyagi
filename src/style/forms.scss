@@ -1,0 +1,31 @@
+.input {
+    border: 1px solid $color-subtle;
+    border-radius: $global-border-radius;
+    padding: .5rem;
+}
+
+%placeholder {
+    @extend %type;
+}
+
+::-webkit-input-placeholder {
+    @extend %placeholder;
+}
+::-moz-placeholder {
+    @extend %placeholder;
+}
+:-ms-input-placeholder {
+    @extend %placeholder;
+}
+:-moz-placeholder {
+    @extend %placeholder;
+}
+
+.input-group {
+    display: flex;
+    margin-top: 1rem;
+
+    .input {
+        margin-right: .75rem;
+    }
+}

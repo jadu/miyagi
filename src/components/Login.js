@@ -12,11 +12,13 @@ export default class Login extends React.Component {
         };
     }
 
-    handleLogin (anonymous = false) {
-        const value = this.refs.name.value.trim()
+    handleLogin () {
+        const anonymous = false;
+        const value = this.refs.name.value.trim();
+
+        console.log(value, anonymous)
 
         if (value || anonymous) {
-            console.log(this.refs.name.value);
             this.props.authenticationService.authenticate(anonymous ? null : value);
             this.setState({ redirectToReferrer: true, error: '' });
         } else {
@@ -41,18 +43,21 @@ export default class Login extends React.Component {
             return (
                 <div className="authentication">
                     <p className="authentication__help">
-                        You should only ever have to do this once. If you would rather stay anonymous
-                        <a className="link link--inline" href="/" onClick={this.handleAnonymousLogin.bind(this)}>
+                        You should only ever have to do this once. Enter your name to start contributing to our machine learning platform.
+                        {/* If you would rather stay anonymous
+                        <a className="link link--inline authentication__annon" href="/" onClick={this.handleAnonymousLogin.bind(this)}>
                             click here
-                        </a>
-                        .
+                        </a> */}
                     </p>
                     { this.state.error && <p className="error">{this.state.error}</p> }
-                    <input ref="name" className="input" type="text" placeholder="Your name here"/>
-                    <Button
-                        value="Start"
-                        onClick={this.handleLogin.bind(this)}
-                    />
+                    <div className="input-group">
+                        <input ref="name" className="input" type="text" placeholder="Daniel LaRusso"/>
+                        <Button
+                            value="Get started"
+                            onClick={this.handleLogin.bind(this)}
+                            modifiers={['button--primary']}
+                        />
+                    </div>
                 </div>
             )
         }

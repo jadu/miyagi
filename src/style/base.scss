@@ -16,3 +16,16 @@ body,
 }
 
 $global-border-radius: 5px;
+$global-box-padding: 1rem;
+
+%box {
+    background-color: rgba(white, .85);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid $color-subtle;
+    border-radius: $global-border-radius;
+    margin: 10vh auto auto;
+    padding: $global-box-padding;
+    position: relative;
+    z-index: 1;
+}
+

@@ -3,10 +3,10 @@
     border: 1px solid $color-subtle;
     border-radius: $global-border-radius;
     cursor: pointer;
-    font-size: .85rem;
+    // font-size: .85rem;
     font-weight: bold;
     overflow: hidden;
-    padding: .5rem;
+    padding: .5rem .75rem;
 
     &:not(:last-of-type) {
         margin-right: 1rem;
@@ -18,8 +18,15 @@
     }
 
     &:focus {
-        outline: 0;
+        // outline: 0;
     }
+}
+
+.button--primary {
+    background-color: $color-highlight;
+    color: white;
+    border-color: mix(black, $color-highlight, 15%);
+    font-weight: normal;
 }
 
 .button.disabled {

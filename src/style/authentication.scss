@@ -1,0 +1,9 @@
+.authentication {
+    @extend %box;
+
+    max-width: 500px;
+}
+
+.authentication__help {
+    margin-bottom: 1rem
+}
