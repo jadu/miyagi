@@ -39,40 +39,6 @@ const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
     process.env.NODE_ENV !== 'poduction'
 );
 
-const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
-    SLACK_API_TOKEN, logger
-);
-
-// try {
-//     slackAuthenticationService.connect();
-// } catch (error) {
-//     logger.error(error);
-// }
-
-/**
- * Miyagi
- */
-const miyagi: Miyagi = (new MiyagiFactory()).create(
-    slackAuthenticationService.getWebClient(),
-    databaseService,
-    logger,
-    ['Have you got 5 minutes to help us train our Machine Learning platform? ' +
-        'Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
-    ['Thank you, would you like to play again?'],
-    ['Thank you for your help today, see you next time :wave:'],
-    300000
-);
-
-/**
- * Handlers
- */
-const responseHandler: ResponseHandler = (new ResponseHandlerFactory()).create(
-    databaseService,
-    miyagi,
-    logger,
-    1000
-);
-
 /**
  * Server
  */
@@ -81,29 +47,68 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
-// Setup http server to receive slack POST requests
-app.post('/', responseHandler.respond.bind(responseHandler));
+/**
+ * Slack
+ */
+if (SLACK_API_TOKEN !== null) {
+    const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
+        SLACK_API_TOKEN, logger
+    );
 
-app.get('/cli/send_questions', async (req, res) => {
     try {
-        miyagi.setDebug(req.query.debug);
-        await miyagi.refresh();
-        miyagi.nextThread();
-        res.sendStatus(200);
+        slackAuthenticationService.connect();
     } catch (error) {
         logger.error(error);
-        res.sendStatus(500);
     }
-});
+
+    /**
+     * Miyagi
+     */
+    const miyagi: Miyagi = (new MiyagiFactory()).create(
+        slackAuthenticationService.getWebClient(),
+        databaseService,
+        logger,
+        ['Have you got 5 minutes to help us train our Machine Learning platform? ' +
+            'Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
+        ['Thank you, would you like to play again?'],
+        ['Thank you for your help today, see you next time :wave:'],
+        300000
+    );
+
+    /**
+     * Handlers
+     */
+    const responseHandler: ResponseHandler = (new ResponseHandlerFactory()).create(
+        databaseService,
+        miyagi,
+        logger,
+        1000
+    );
+
+    // Setup http server to receive slack POST requests
+    app.post('/', responseHandler.respond.bind(responseHandler));
+
+    app.get('/', (req, res) => {
+        res.send('Listening for Slack interactions');
+    });
+
+    app.get('/cli/send_questions', async (req, res) => {
+        try {
+            miyagi.setDebug(req.query.debug);
+            await miyagi.refresh();
+            miyagi.nextThread();
+            res.sendStatus(200);
+        } catch (error) {
+            logger.error(error);
+            res.sendStatus(500);
+        }
+    });
+}
 
 // app.get('/slack/auth', (req, res) => {
 //     console.log(req.params.code);
 //     res.redirect('/');
 // });
-
-app.get('/', (req, res) => {
-    res.send('Listening for Slack interactions');
-});
 
 app.get('/miyapi/extract', async (req, res) => {
     try {

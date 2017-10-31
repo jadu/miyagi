@@ -1,4 +1,6 @@
 .suggestions {
     margin: 1rem auto auto 0;
     display: flex;
+    position: relative;
+    z-index: 1;
 }

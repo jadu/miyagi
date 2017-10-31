@@ -2,7 +2,8 @@ $extract-padding: 1rem;
 $extract-highlight: .25rem;
 
 .extract {
-    background-color: white;
+    background-color: rgba(white, .85);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid $color-subtle;
     border-radius: $global-border-radius;
     height: auto;
@@ -10,6 +11,7 @@ $extract-highlight: .25rem;
     padding: $extract-padding;
     position: relative;
     width: 100%;
+    z-index: 1;
 
     &:before {
         bottom: $extract-padding;

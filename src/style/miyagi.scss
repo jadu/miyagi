@@ -2,7 +2,9 @@
     bottom: 0;
     position: fixed;
     right: 0;
-    width: 25vw;
+    width: 45vh;
+    max-width: 250px;
+    z-index: 0;
 }
 
 .mr-miyagi__image {
@@ -15,4 +17,5 @@
     flex-direction: column;
     margin: 10vh auto auto;
     width: 75vw;
+    max-width: 800px;
 }

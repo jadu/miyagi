@@ -5,13 +5,80 @@
     cursor: pointer;
     font-size: .85rem;
     font-weight: bold;
+    overflow: hidden;
     padding: .5rem;
 
     &:not(:last-of-type) {
         margin-right: 1rem;
     }
+
+    &:hover {
+        border-color: mix(black, $color-subtle, 30%);
+        transition: border-color 150ms;
+    }
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+.button.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.button__label {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
 }
 
 .button__icon {
+    display: inline-block;
     margin-right: .5rem;
+    position: relative;
+    vertical-align: middle;
+    width: 1.25rem;
+}
+
+@keyframes button-selected-in {
+    0% { transform: translateY(0); }
+    40% { transform: translateY(-.4rem); }
+    100% { transform: translateY(2.5rem); }
+}
+
+@keyframes button-selected-out {
+    0% { transform: translateY(-2.5rem); }
+    60% { transform: translateY(.25rem); }
+    100% { transform: translateY(0); }
+}
+
+$button-selected-in-duration: 375ms;
+$button-selected-out-duration: 400ms;
+
+.button.selected-in {
+    .button__label {
+        animation: button-selected-in $button-selected-in-duration ease forwards;
+    }
+
+    .button__icon {
+        animation: button-selected-in $button-selected-in-duration 100ms ease forwards;
+    }
+}
+
+
+.button.selected-out {
+    border-color: $color-success;
+    background-color: mix(white, $color-success, 85%);
+    transition: background-color 400ms;
+
+    .button__label {
+        transform: translateY(-2.5rem);
+        animation: button-selected-out $button-selected-out-duration ease forwards;
+    }
+
+    .button__icon {
+        transform: translateY(-2.5rem);
+        animation: button-selected-out $button-selected-out-duration 100ms ease forwards;
+    }
 }

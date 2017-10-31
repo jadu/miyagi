@@ -30,6 +30,8 @@ export default class DatabaseService {
     }
 
     public async updateExtractSuggestions (extractId: string, userId: string, value: string) {
+        console.log('updating extract: ', this.extractCollection, extractId, userId, value);
+
         const suggestion: Suggestion = {
             user_id: userId,
             value: value

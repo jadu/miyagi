@@ -22,6 +22,7 @@ export default class SlackAuthenticationService {
             this.rtmClient.start();
             // Establish WebAPI client
             this.webClient = new WebClient(this.token);
+            this.logger.info('Connected to Slack');
         } catch (error) {
             this.logger.error('Unable to connect to slack', error);
             process.exit(1);
