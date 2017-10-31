@@ -7,14 +7,12 @@ export default class ProtectedRoutes extends React.Component {
     }
 
     render () {
-        const { component: Component, authenticationService, ...rest } = this.props;
-        const auth = this.props.authenticationService.getAuthenticated();
-
-        console.log(`checking authentication | ${auth}`);
+        const { Component, authenticationService, ...rest } = this.props;
+        const { authenticated } = this.props.authenticationService.getAuthenticatedUser();
 
         return <Route { ...rest } render={props => (
-            auth
-                ? <Component { ...props }/>
+            authenticated
+                ? <Component authenticationService={authenticationService}/>
                 : <Redirect to={{ pathname: '/login', state : { from: props.location } }}/>
         )}/>
     }

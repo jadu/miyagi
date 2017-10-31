@@ -132,10 +132,10 @@ app.get('/miyapi/extract', async (req, res) => {
 
 app.post('/miyapi/extract', async (req, res) => {
     try {
-        const { _id, value } = req.body;
+        const { _id, value, user_id } = req.body;
         const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
 
-        databaseService.updateExtractSuggestions(_id, 'ANONYMOUS', value);
+        databaseService.updateExtractSuggestions(_id, user_id, value);
 
         res.status(200);
         res.send(JSON.stringify({

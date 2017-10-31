@@ -2,6 +2,7 @@ export default class AuthenticationService {
     constructor () {
         this.authenticated = false;
         this.token = '';
+        this.user = null;
     }
 
     authenticateWithParams (params) {
@@ -16,11 +17,19 @@ export default class AuthenticationService {
         this.token = token;
     }
 
+    authenticate (username) {
+        this.authenticated = true;
+        this.user = username !== null ? username : 'ANONYMOUS';
+    }
+
     authenticateWithAnnonymous () {
         this.authenticated = true;
     }
 
-    getAuthenticated () {
-        return this.authenticated;
+    getAuthenticatedUser () {
+        return {
+            authenticated: this.authenticated,
+            user: this.user
+        }
     }
 }

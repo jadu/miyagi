@@ -21,17 +21,18 @@ export default class App extends React.Component {
         return (
             <BrowserRouter>
                 <div className="root__container">
-                    <TopBar/>
-                    <Miyagi/>
-                    <div className="mr-miyagi">
-                        <img src={MrMiagi} className="mr-miyagi__image"/>
-                    </div>
+                    <TopBar authenticationService={authenticationService}/>
 
-                    {/* <pre>App</pre>
                     <Route path="/login" render={
                         props => <Login { ...props } authenticationService={authenticationService}/>
                     }/>
-                    <ProtectedRoute exact path="/" component={Sentiment} authenticationService={authenticationService}/> */}
+
+                    <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
+                    {/* <Miyagi/> */}
+
+                    <div className="mr-miyagi">
+                        <img src={MrMiagi} className="mr-miyagi__image"/>
+                    </div>
                 </div>
             </BrowserRouter>
         );

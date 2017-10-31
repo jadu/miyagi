@@ -1,6 +1,6 @@
 import React from 'react';
 import Suggestions from './Suggestions';
-import Button from './Button';
+import Suggestion from './Suggestion';
 import Extract from './Extract';
 import reqwest from 'reqwest';
 import neutralIcon from '../../assets/neutral.png';
@@ -12,9 +12,12 @@ export default class Miyagi extends React.Component {
     constructor (props) {
         super(props);
 
+        console.log(props)
+
         this.state = {
             extract: '',
-            extractId: ''
+            extractId: '',
+            user: this.props.authenticationService.getAuthenticatedUser().user
         };
 
         this.suggestionMap = {
@@ -39,7 +42,7 @@ export default class Miyagi extends React.Component {
             reqwest({
                 url: 'http://localhost:4567/miyapi/extract',
                 method: 'post',
-                data: { _id: this.state.extractId, value: key }
+                data: { _id: this.state.extractId, value: key, user_id: this.state.user }
             }).then(async res => {
                 await this.updateExtractFromResponse(res);
                 resolve();
@@ -63,7 +66,7 @@ export default class Miyagi extends React.Component {
     render () {
         const options = Object.keys(this.suggestionMap)
             .map(option =>
-                <Button key={option} icon={this.suggestionMap[option].icon} value={this.suggestionMap[option].value}/>
+                <Suggestion key={option} icon={this.suggestionMap[option].icon} value={this.suggestionMap[option].value}/>
             );
 
         return (

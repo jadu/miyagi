@@ -1,18 +1,32 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import Button from './Button';
 
 export default class Login extends React.Component {
     constructor (props) {
         super(props);
 
         this.state = {
-            redirectToReferrer: false
+            redirectToReferrer: false,
+            error: ''
         };
     }
 
-    handleAnnonymousLogin () {
-        this.props.authenticationService.authenticateWithAnnonymous();
-        this.setState({ redirectToReferrer: true });
+    handleLogin (anonymous = false) {
+        const value = this.refs.name.value.trim()
+
+        if (value || anonymous) {
+            console.log(this.refs.name.value);
+            this.props.authenticationService.authenticate(anonymous ? null : value);
+            this.setState({ redirectToReferrer: true, error: '' });
+        } else {
+            this.setState({ error: 'We need a value here' });
+        }
+    }
+
+    handleAnonymousLogin (event) {
+        event.preventDefault();
+        this.handleLogin(true);
     }
 
     render () {
@@ -26,13 +40,19 @@ export default class Login extends React.Component {
         } else {
             return (
                 <div className="authentication">
-                    <div className="authentication__buttons">
-                        <a href="https://slack.com/oauth/authorize?scope=identity.basic&client_id=105999935111.249047229058"><img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcSet="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" /></a>
-                        <button
-                            onClick={this.handleAnnonymousLogin.bind(this)}
-                            className="button authentication__button"
-                        >I'd rather stay anonymous</button>
-                    </div>
+                    <p className="authentication__help">
+                        You should only ever have to do this once. If you would rather stay anonymous
+                        <a className="link link--inline" href="/" onClick={this.handleAnonymousLogin.bind(this)}>
+                            click here
+                        </a>
+                        .
+                    </p>
+                    { this.state.error && <p className="error">{this.state.error}</p> }
+                    <input ref="name" className="input" type="text" placeholder="Your name here"/>
+                    <Button
+                        value="Start"
+                        onClick={this.handleLogin.bind(this)}
+                    />
                 </div>
             )
         }
