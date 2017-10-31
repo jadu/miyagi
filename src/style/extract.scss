@@ -6,21 +6,22 @@ $extract-highlight: .25rem;
     height: auto;
     margin: auto;
     width: 100%;
+}
+
+.extract__text {
+    max-height: 50vh;
+    overflow-y: scroll;
+    position: relative;
+    padding-left: $global-box-padding;
 
     &:before {
-        bottom: $global-box-padding;
+        bottom: 0;
         background-color: $color-highlight;
         border-radius: $global-border-radius;
         content: '';
-        left: $global-box-padding;
+        left: 0;
         position: absolute;
-        top: $global-box-padding;
+        top: 0;
         width: $extract-highlight;
     }
-}
-
-.extract__container {
-    max-height: 50vh;
-    overflow-y: scroll;
-    padding-left: $global-box-padding + ($extract-highlight / 2);
 }

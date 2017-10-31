@@ -13,7 +13,7 @@ body {
 p {
     margin: 0 0 .75rem;
 
-    &:last-of-type:not(:first-of-type) {
+    &:last-child {
         margin-bottom: 0;
     }
 }

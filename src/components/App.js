@@ -6,7 +6,7 @@ import AuthenticationService from './AuthenticationService';
 import ProtectedRoute from './ProtectedRoute';
 import Miyagi from './Miyagi';
 import TopBar from './TopBar';
-import MrMiagi from '../../assets/miyagi.png';
+import TheManHimself from './TheManHimself';
 
 const authenticationService = new AuthenticationService();
 
@@ -24,9 +24,7 @@ export default class App extends React.Component {
                     <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
                     {/* <Miyagi/> */}
 
-                    <div className="mr-miyagi">
-                        <img src={MrMiagi} className="mr-miyagi__image"/>
-                    </div>
+                    <TheManHimself/>
                 </div>
             </BrowserRouter>
         );
