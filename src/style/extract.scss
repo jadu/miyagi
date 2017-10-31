@@ -5,9 +5,7 @@ $extract-highlight: .25rem;
 
     height: auto;
     margin: auto;
-    position: relative;
     width: 100%;
-    z-index: 1;
 
     &:before {
         bottom: $global-box-padding;

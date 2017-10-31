@@ -65,7 +65,7 @@
     "watch:client:server": "nodemon dist/server/server.js",
     "test": "jest",
     "test:watch": "jest --watch --coverage",
-    "start:production": "NODE_ENV=production node dist/server/api.js",
+    "start:production": "NODE_ENV=production PORT=80 node dist/server/api.js",
     "build": "webpack --env.platform=web && tsc"
   },
   "jest": {
