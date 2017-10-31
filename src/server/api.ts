@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 4567;
 const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
     DATABASE_URL,
     logger,
-    process.env.NODE_ENV !== 'poduction'
+    process.env.NODE_ENV !== 'production'
 );
 
 /**
