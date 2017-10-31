@@ -13,7 +13,7 @@ export default class DatabaseService {
         private client: MongoClient,
         private logger: LoggerInstance,
         private listService: ListService,
-        private dev: string
+        private dev: boolean
     ) {
         this.extractCollection = this.dev ? 'extracts_dev' : 'extracts';
     }
