@@ -1,8 +1,20 @@
+@keyframes help-in {
+    0% { transform: translateY(200%); }
+    100% { transform: translateY(0); }
+}
+
 .help {
-    bottom: 1rem;
-    font-size: .85rem;
-    left: 1rem;
-    position: fixed;
+    display: none;
+
+    @include respond-min($bp-help-show) {
+        animation: help-in 1000ms 500ms cubic-bezier(0.13, 0.92, 0.74, 1) forwards;
+        bottom: 1rem;
+        display: block;
+        font-size: .85rem;
+        left: 1rem;
+        position: fixed;
+        transform: translateY(200%);
+    }
 }
 
 .help__heading {

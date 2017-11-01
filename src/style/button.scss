@@ -3,22 +3,13 @@
     border: 1px solid $color-subtle;
     border-radius: $global-border-radius;
     cursor: pointer;
-    // font-size: .85rem;
     font-weight: bold;
     overflow: hidden;
     padding: .5rem .75rem;
 
-    &:not(:last-of-type) {
-        margin-right: 1rem;
-    }
-
     &:hover {
         border-color: mix(black, $color-subtle, 30%);
         transition: border-color 150ms;
-    }
-
-    &:focus {
-        // outline: 0;
     }
 }
 

@@ -3,8 +3,14 @@
     position: fixed;
     right: 0;
     width: 45vh;
+    opacity: .25;
     max-width: 250px;
     z-index: 0;
+    transition: opacity 1000ms;
+
+    @include respond-min($bp-miyagi-show) {
+        opacity: 1;
+    }
 }
 
 .mr-miyagi__image {
@@ -15,7 +21,11 @@
 .miyagi {
     display: flex;
     flex-direction: column;
-    margin: 10vh auto auto;
-    width: 75vw;
-    max-width: 800px;
+    margin: 0 1rem;
+
+    @include respond-min($bp-extract-large) {
+        margin: 10vh auto auto;
+        width: 75vw;
+        max-width: 800px;
+    }
 }

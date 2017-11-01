@@ -1,3 +1,9 @@
+@mixin respond-min($width) {
+    @media screen and (min-width: $width) {
+        @content;
+    }
+}
+
 * {
     box-sizing: border-box;
 }
@@ -17,6 +23,12 @@ body,
 
 $global-border-radius: 5px;
 $global-box-padding: 1rem;
+
+$bp-extract-large: 400px;
+$bp-suggestion-2-up: 400px;
+$bp-suggestion-4-up: 686px;
+$bp-help-show: 700px;
+$bp-miyagi-show: 700px;
 
 %box {
     background-color: rgba(white, .85);

@@ -1,6 +1,33 @@
 .suggestions {
-    margin: 1rem auto auto 0;
     display: flex;
+    flex-wrap: wrap;
+    margin: 1rem auto auto 0;
     position: relative;
     z-index: 1;
+    width: 100%;
+
+    @include respond-min($bp-suggestion-2-up) {
+
+    }
+
+    @include respond-min($bp-suggestion-4-up) {
+        width: auto;
+    }
+}
+
+.suggestions__suggestion {
+    flex-basis: 100%;
+
+    @include respond-min($bp-suggestion-4-up) {
+        flex-basis: auto;
+    }
+
+    &:not(:last-of-type) {
+        margin-bottom: .5rem;
+
+        @include respond-min($bp-suggestion-4-up) {
+            margin-bottom: 0;
+            margin-right: 1rem;
+        }
+    }
 }

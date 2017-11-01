@@ -4,8 +4,12 @@ $extract-highlight: .25rem;
     @extend %box;
 
     height: auto;
-    margin: auto;
+    margin: 0;
     width: 100%;
+
+    @include respond-min($bp-extract-large) {
+        margin: auto;
+    }
 }
 
 .extract__text {

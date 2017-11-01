@@ -68,7 +68,8 @@ export default class Suggestion extends React.Component {
         const modifiers = []
 
         modifiers.push(`button--${value.toLowerCase().trim().replace(/\s/g, '-')}`);
-        modifiers.push(this.state.phase.className)
+        modifiers.push(this.state.phase.className);
+        modifiers.push('suggestions__suggestion');
 
         return (
             <Button
