@@ -19,13 +19,7 @@ export default class TheManHimself extends React.Component {
     }
 
     componentWilUnmount () {
-        clearInterval(this.blinkInterval);
-    }
-
-    getBlinkInterval () {
-        const interval = Math.round(Math.random() * 5000);
-        console.log(interval)
-        return interval;
+        clearTimeout(this.timeout);
     }
 
     async blink () {
@@ -33,12 +27,12 @@ export default class TheManHimself extends React.Component {
             src: MrMiagiBlink
         });
 
-        setTimeout(() => {
+        this.timeout = setTimeout(() => {
             this.setState({
                 src: MrMiagi
             });
 
-            setTimeout(this.blink.bind(this), getRandomInt(100, 6000));
+            this.timeout = setTimeout(this.blink.bind(this), getRandomInt(100, 6000));
         }, getRandomInt(150, 300));
     }
 
