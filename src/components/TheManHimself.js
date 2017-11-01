@@ -1,6 +1,6 @@
 import React from 'react';
-import MrMiagi from '../../assets/miyagi.png';
-import MrMiagiBlink from '../../assets/miyagi_blink.png';
+import MrMiyagi from '../../assets/miyagi.png';
+import MrMiyagiBlink from '../../assets/miyagi_blink.png';
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -10,7 +10,7 @@ export default class TheManHimself extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            src: MrMiagi
+            src: MrMiyagi
         }
     }
 
@@ -18,18 +18,18 @@ export default class TheManHimself extends React.Component {
         this.blink();
     }
 
-    componentWilUnmount () {
+    componentWillUnmount () {
         clearTimeout(this.timeout);
     }
 
     async blink () {
         await this.setState({
-            src: MrMiagiBlink
+            src: MrMiyagiBlink
         });
 
         this.timeout = setTimeout(() => {
             this.setState({
-                src: MrMiagi
+                src: MrMiyagi
             });
 
             this.timeout = setTimeout(this.blink.bind(this), getRandomInt(100, 6000));
