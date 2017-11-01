@@ -10,6 +10,8 @@ import TheManHimself from './TheManHimself';
 
 const authenticationService = new AuthenticationService();
 
+authenticationService.init();
+
 export default class App extends React.Component {
     render () {
         return (

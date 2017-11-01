@@ -32,7 +32,7 @@ export default class TheManHimself extends React.Component {
                 src: MrMiyagi
             });
 
-            this.timeout = setTimeout(this.blink.bind(this), getRandomInt(100, 6000));
+            this.timeout = setTimeout(this.blink.bind(this), getRandomInt(100, 8000));
         }, getRandomInt(150, 300));
     }
 

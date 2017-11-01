@@ -3,26 +3,30 @@ export default class AuthenticationService {
         this.authenticated = false;
         this.token = '';
         this.user = null;
+        this.usernameStorageKey = 'miyagi:user';
     }
 
-    authenticateWithParams (params) {
-        let token = false;
+    init () {
+        const storedUsername = window.localStorage.getItem(this.usernameStorageKey);
 
-        if (params && typeof params === 'string') {
-            const test = params.match(/code=([A-Za-z\.0-9]+)/i);
-
-            token = test.length ? test[1] : false;
+        if (storedUsername && storedUsername.length) {
+            this.user = storedUsername;
+            this.authenticated = true;
         }
-
-        this.token = token;
     }
 
     authenticate (username) {
-        this.authenticated = true;
-        this.user = username !== null ? username : 'ANONYMOUS';
-    }
+        if (username !== null) {
+            const formattedUsername = username.split(' ').map(word => {
+                return word[0].toUpperCase() + word.slice(1);
+            }).join(' ');
 
-    authenticateWithAnnonymous () {
+            window.localStorage.setItem(this.usernameStorageKey, formattedUsername);
+            this.user = formattedUsername;
+        } else {
+            this.user = 'ANONYMOUS';
+        }
+
         this.authenticated = true;
     }
 
