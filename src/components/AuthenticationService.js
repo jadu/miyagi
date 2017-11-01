@@ -4,10 +4,11 @@ export default class AuthenticationService {
         this.token = '';
         this.user = null;
         this.usernameStorageKey = 'miyagi:user';
+        this.root = root;
     }
 
     init () {
-        const storedUsername = root.localStorage.getItem(this.usernameStorageKey);
+        const storedUsername = this.root.localStorage.getItem(this.usernameStorageKey);
 
         if (storedUsername && storedUsername.length) {
             this.user = storedUsername;
@@ -21,7 +22,7 @@ export default class AuthenticationService {
                 return word[0].toUpperCase() + word.slice(1);
             }).join(' ');
 
-            root.localStorage.setItem(this.usernameStorageKey, formattedUsername);
+            this.root.localStorage.setItem(this.usernameStorageKey, formattedUsername);
             this.user = formattedUsername;
         } else {
             this.user = 'ANONYMOUS';
