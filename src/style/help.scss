@@ -18,10 +18,6 @@
 .help__shortcut {
     align-items: center;
     display: flex;
-
-    &:not(:last-of-type) {
-        margin-bottom: .25rem;
-    }
 }
 
 .help__action {
