@@ -23,9 +23,19 @@
 
 .input-group {
     display: flex;
+    flex-direction: column;
     margin-top: 1rem;
 
+    @include respond-min($bp-inline-forms) {
+        flex-direction: row;
+    }
+
     .input {
-        margin-right: .75rem;
+        margin-bottom: .75rem;
+
+        @include respond-min($bp-inline-forms) {
+            margin-bottom: 0;
+            margin-right: .75rem;
+        }
     }
 }

@@ -1,7 +1,13 @@
 .authentication {
     @extend %box;
 
-    max-width: 500px;
+    margin: 0 1rem;
+
+    @include respond-min($bp-extract-large) {
+        margin: 10vh auto auto;
+        width: 75vw;
+        max-width: 800px;
+    }
 }
 
 .authentication__help {
