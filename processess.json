@@ -1,0 +1,9 @@
+{
+    "apps": [{
+        "script": "dist/server/api.js",
+        "env": {
+            "NODE_ENV": "production",
+            "PORT": "80"
+        }
+    }]
+}
