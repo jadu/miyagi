@@ -20,6 +20,16 @@ export default class Suggestion extends React.Component {
         }
     }
 
+    componentDidMount() {
+        document.addEventListener('keydown', this.handleKeyPress.bind(this));
+    }
+
+    handleKeyPress (event) {
+        if (event.keyCode === this.props.shortcut) {
+            this.handleClick(document.getElementById(this.props.id))
+        }
+    }
+
     async nextState (label) {
         const wait = parseFloat(window.getComputedStyle(label).animationDuration) * 1000;
         const { state, proceed } = await this.transitionPhaseService.update(this.state, wait);
@@ -36,6 +46,8 @@ export default class Suggestion extends React.Component {
     }
 
     async handleClick (label) {
+        console.log(label)
+
         this.props.handleClick();
         await this.nextState(label);
         await this.props.handleSuggestion();
@@ -62,6 +74,7 @@ export default class Suggestion extends React.Component {
 
         return (
             <Button
+                id={id}
                 ref="button"
                 value={overwrittenValue ? overwrittenValue : value}
                 icon={overwrittenIcon ? overwrittenIcon : icon}

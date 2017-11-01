@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default class Button extends React.Component {
     render() {
-        const { modifiers, onClick, icon, value } = this.props;
+        const { modifiers, onClick, icon, value, id } = this.props;
         const active = this.props.active !== undefined ? this.props.active : true;
         const className = 'button '
             + (modifiers ? modifiers.join(' ') : '')
@@ -15,7 +15,7 @@ export default class Button extends React.Component {
                 onClick={onClick && onClick.bind(this, this.refs.label)}
             >
                 { icon && <img className="button__icon" src={icon}/> }
-                <span ref="label" className="button__label">{value}</span>
+                <span id={id} ref="label" className="button__label">{value}</span>
             </button>
         );
     }
@@ -26,5 +26,6 @@ Button.propTtypes = {
     icon: PropTypes.string,
     onClick: PropTypes.func,
     modifiers: PropTypes.array,
-    active: PropTypes.bool
+    active: PropTypes.bool,
+    id: PropTypes.string
 }

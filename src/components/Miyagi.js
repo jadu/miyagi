@@ -3,6 +3,7 @@ import Suggestions from './Suggestions';
 import Suggestion from './Suggestion';
 import Extract from './Extract';
 import reqwest from 'reqwest';
+import Help from './Help';
 import neutralIcon from '../../assets/neutral.png';
 import negativeIcon from '../../assets/angry.png';
 import positiveIcon from '../../assets/positive.png';
@@ -19,10 +20,10 @@ export default class Miyagi extends React.Component {
         };
 
         this.suggestionMap = {
-            positive: { handler: this.makeSuggestion.bind(this), icon: positiveIcon, value: 'Positive' },
-            neutral: { handler: this.makeSuggestion.bind(this), icon: neutralIcon, value: 'Neutral' },
-            negative: { handler: this.makeSuggestion.bind(this), icon: negativeIcon, value: 'Negative' },
-            not_sure: { handler: this.makeSuggestion.bind(this), icon: unicornIcon, value: 'Not Sure' }
+            positive: { handler: this.makeSuggestion.bind(this), icon: positiveIcon, value: 'Positive', shortcut: 49, keypress: 1 },
+            neutral: { handler: this.makeSuggestion.bind(this), icon: neutralIcon, value: 'Neutral', shortcut: 50, keypress: 2 },
+            negative: { handler: this.makeSuggestion.bind(this), icon: negativeIcon, value: 'Negative', shortcut: 51, keypress: 3 },
+            not_sure: { handler: this.makeSuggestion.bind(this), icon: unicornIcon, value: 'Not Sure', shortcut: 52, keypress: 4 }
         };
 
         this.getExtract();
@@ -64,7 +65,12 @@ export default class Miyagi extends React.Component {
     render () {
         const options = Object.keys(this.suggestionMap)
             .map(option =>
-                <Suggestion key={option} icon={this.suggestionMap[option].icon} value={this.suggestionMap[option].value}/>
+                <Suggestion
+                    shortcut={this.suggestionMap[option].shortcut}
+                    key={option}
+                    icon={this.suggestionMap[option].icon}
+                    value={this.suggestionMap[option].value}
+                />
             );
 
         return (
@@ -73,6 +79,14 @@ export default class Miyagi extends React.Component {
                 <Suggestions onSuggestion={this.handleSuggestion.bind(this)}>
                     { options }
                 </Suggestions>
+                <Help
+                    shortcuts={Object.keys(this.suggestionMap).map(
+                        suggestion => ({
+                            code: this.suggestionMap[suggestion].keypress,
+                            action: this.suggestionMap[suggestion].value
+                        })
+                    )}
+                />
             </div>
         )
     }

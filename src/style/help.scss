@@ -1,0 +1,41 @@
+.help {
+    bottom: 1rem;
+    font-size: .85rem;
+    left: 1rem;
+    position: fixed;
+}
+
+.help__heading {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.help__shortcuts {
+    display: flex;
+}
+
+.help__shortcut {
+    display: flex;
+
+    &:not(:last-of-type) {
+        margin-bottom: .25rem;
+    }
+}
+
+.help__action {
+    margin: auto .5rem;
+}
+
+.help__icon {
+    border: 1px solid $color-subtle;
+    border-radius: $global-border-radius;
+    display: flex;
+    font-size: .7rem;
+    font-weight: bold;
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
+.help__code {
+    margin: auto;
+}
