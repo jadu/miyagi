@@ -1,5 +1,5 @@
 export default class AuthenticationService {
-    constructor () {
+    constructor (root) {
         this.authenticated = false;
         this.token = '';
         this.user = null;
@@ -7,7 +7,7 @@ export default class AuthenticationService {
     }
 
     init () {
-        const storedUsername = window.localStorage.getItem(this.usernameStorageKey);
+        const storedUsername = root.localStorage.getItem(this.usernameStorageKey);
 
         if (storedUsername && storedUsername.length) {
             this.user = storedUsername;
@@ -21,7 +21,7 @@ export default class AuthenticationService {
                 return word[0].toUpperCase() + word.slice(1);
             }).join(' ');
 
-            window.localStorage.setItem(this.usernameStorageKey, formattedUsername);
+            root.localStorage.setItem(this.usernameStorageKey, formattedUsername);
             this.user = formattedUsername;
         } else {
             this.user = 'ANONYMOUS';

@@ -8,7 +8,7 @@ import Miyagi from './Miyagi';
 import TopBar from './TopBar';
 import TheManHimself from './TheManHimself';
 
-const authenticationService = new AuthenticationService();
+const authenticationService = new AuthenticationService(window);
 
 authenticationService.init();
 
