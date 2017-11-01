@@ -46,8 +46,6 @@ export default class Suggestion extends React.Component {
     }
 
     async handleClick (label) {
-        console.log(label)
-
         this.props.handleClick();
         await this.nextState(label);
         await this.props.handleSuggestion();
