@@ -11,10 +11,12 @@
 }
 
 .help__shortcuts {
+    align-items: center;
     display: flex;
 }
 
 .help__shortcut {
+    align-items: center;
     display: flex;
 
     &:not(:last-of-type) {
