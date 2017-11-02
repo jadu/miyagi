@@ -1,4 +1,5 @@
 import express = require('express');
+import favicon = require('serve-favicon');
 import bodyParser = require('body-parser');
 import { Logger, transports } from 'winston';
 import request = require('request-promise-native');
@@ -45,6 +46,7 @@ const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
  */
 const app = express();
 
+app.use(favicon(path.join(process.cwd(), 'assets/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(process.cwd(), 'dist/www/')));
 app.use(cors());
