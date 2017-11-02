@@ -18,6 +18,20 @@ p {
     }
 }
 
+h2 {
+    font-size: 2rem;
+    line-height: 1.25;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1rem;
+    margin: 1.25rem 0 .25rem;
+}
+
 .error {
     color: $color-error;
 }

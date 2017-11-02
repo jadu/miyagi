@@ -19,13 +19,8 @@
 }
 
 .miyagi {
+    @extend %centered;
+
     display: flex;
     flex-direction: column;
-    margin: 0 1rem;
-
-    @include respond-min($bp-extract-large) {
-        margin: 10vh auto auto;
-        width: 75vw;
-        max-width: 800px;
-    }
 }

@@ -26,10 +26,20 @@ $global-box-padding: 1rem;
 
 $bp-extract-large: 400px;
 $bp-suggestion-2-up: 400px;
-$bp-suggestion-4-up: 686px;
+$bp-suggestion-4-up: 710px;
 $bp-help-show: 700px;
 $bp-miyagi-show: 686px;
 $bp-inline-forms: 368px;
+
+%centered {
+    margin: 0 1rem 2.5rem;
+
+    @include respond-min($bp-extract-large) {
+        margin: 5vh auto 5rem;
+        width: 75vw;
+        max-width: 800px;
+    }
+}
 
 %box {
     background-color: rgba(white, .85);

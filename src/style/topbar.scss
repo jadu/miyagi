@@ -5,9 +5,18 @@
 }
 
 .topbar__logo {
-    font-size: 1rem;
-    margin: 0;
-    text-transform: uppercase;
+    &,
+    h1,
+    &:visited,
+    &:hover,
+    &:focus,
+    &:active {
+        color: $color-copy-base;
+        font-size: 1rem;
+        margin: 0;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
 }
 
 .topbar__user {

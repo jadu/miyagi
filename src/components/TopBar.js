@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function TopBar ({
     authenticationService
@@ -9,7 +10,7 @@ export default function TopBar ({
 
     return (
         <div className="topbar">
-            <h1 className="topbar__logo">Miyagi</h1>
+            <Link to="/" className="topbar__logo"><h1>Miyagi</h1></Link>
             { authenticated && <p className="topbar__user">{user}</p> }
         </div>
     );

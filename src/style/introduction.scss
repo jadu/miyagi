@@ -1,0 +1,7 @@
+.introduction {
+    @extend %centered;
+
+    @include respond-min($bp-extract-large) {
+        max-width: 600px;
+    }
+}

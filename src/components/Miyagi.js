@@ -9,6 +9,7 @@ import negativeIcon from '../../assets/angry.png';
 import positiveIcon from '../../assets/positive.png';
 import unicornIcon from '../../assets/unicorn.png';
 import { Link } from 'react-router-dom';
+import TheManHimself from './TheManHimself';
 
 export default class Miyagi extends React.Component {
     constructor (props) {
@@ -76,10 +77,7 @@ export default class Miyagi extends React.Component {
 
         return (
             <div className="miyagi">
-                <p className="extract__help">
-                    Read the extract below and let Miyagi know what you think the sentiment of the message is. There is no right or wrong answer, if you are unsure we'll send you another one. Be sure to read our
-                    <Link to="/introduction" className="link link--inline">Introduction to Miyagi</Link> before you begin.
-                </p>
+                <p className="extract__help">Read the extract below and let Miyagi know what you think the sentiment of the message is. There is no right or wrong answer, if you are unsure we'll send you another one. Be sure to read our <Link to="/introduction" className="link link--inline">Introduction to Miyagi</Link> before you begin.</p>
                 <Extract text={this.state.extract}/>
                 <Suggestions onSuggestion={this.handleSuggestion.bind(this)}>
                     { options }
@@ -92,6 +90,7 @@ export default class Miyagi extends React.Component {
                         })
                     )}
                 />
+                <TheManHimself/>
             </div>
         )
     }

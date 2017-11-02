@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Miyagi from './Miyagi';
 import TopBar from './TopBar';
 import TheManHimself from './TheManHimself';
+import Introduction from './Introduction';
 
 const authenticationService = new AuthenticationService(window);
 
@@ -23,10 +24,9 @@ export default class App extends React.Component {
                         props => <Login { ...props } authenticationService={authenticationService}/>
                     }/>
 
-                    <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
-                    {/* <Miyagi/> */}
+                    <Route path="/introduction" render={Introduction}/>
 
-                    <TheManHimself/>
+                    <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
                 </div>
             </BrowserRouter>
         );

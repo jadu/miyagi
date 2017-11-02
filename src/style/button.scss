@@ -6,11 +6,17 @@
     font-weight: bold;
     overflow: hidden;
     padding: .5rem .75rem;
+    text-decoration: none;
 
     &:hover {
         border-color: mix(black, $color-subtle, 30%);
         transition: border-color 150ms;
     }
+}
+
+.button--block {
+    display: inline-block;
+    margin-top: .5rem;
 }
 
 .button--primary {
