@@ -24,6 +24,11 @@
     color: white;
     border-color: mix(black, $color-highlight, 15%);
     font-weight: normal;
+
+    &:hover {
+        border-color: mix(black, $color-highlight, 30%);
+        transition: border-color 150ms;
+    }
 }
 
 .button.disabled {
