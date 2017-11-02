@@ -37,7 +37,10 @@ module.exports = (env = {}) => {
             ],
             devtool: 'source-map',
             devServer: {
-                historyApiFallback: true
+                historyApiFallback: true,
+                proxy: {
+                    '/miyapi': 'http://localhost:4567'
+                }
             }
         },
         'node': {

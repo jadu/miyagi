@@ -67,6 +67,7 @@
     "test": "jest",
     "test:watch": "jest --watch --coverage",
     "start:production": "NODE_ENV=production PORT=80 node dist/server/api.js",
+    "start:web": "webpack-dev-server --env.platform=web",
     "build": "webpack --env.platform=web && tsc",
     "production": "npm run build && npm run start:production"
   },
