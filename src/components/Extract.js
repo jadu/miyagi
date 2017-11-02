@@ -16,9 +16,6 @@ export default function Extract ({ text }) {
     return (
         <div className="extract">
             <div className="extract__container">
-                <p className="extract__help">
-                    Read the extract below and let Miyagi know what you think the sentiment of the message is. There is no right or wrong answer, if you are unsure we'll send you another one.
-                </p>
                 <div className="extract__text">
                     { parsedText }
                 </div>
