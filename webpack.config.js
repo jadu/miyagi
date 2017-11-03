@@ -49,16 +49,19 @@ module.exports = (env = {}) => {
             }
         },
         'node': {
-            entry: path.join(__dirname, 'src/server/server.ts'),
+            entry: path.join(__dirname, 'src/server/api.ts'),
             output: {
                 path: path.join(__dirname, 'dist'),
-                filename: 'server.bundle.js',
+                filename: 'api.bundle.js',
+            },
+            resolve: {
+                extensions: [".ts", ".tsx", ".js", ".json"]
             },
             target: 'node',
             module: {
                 rules: [
-                    { test: /\.ts?$/, use: 'ts-loader', exclude: /(node_modules|tests)/ },
-                    { test: /\.js?$/, loader: 'babel-loader', exclude: /node_modules/ },
+                    { test: /\.ts?$/, use: 'awesome-typescript-loader', exclude: /(node_modules|tests)/ },
+                    { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' },
                     { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' }
                 ]
             }

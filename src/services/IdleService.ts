@@ -1,7 +1,7 @@
 import { LoggerInstance } from 'winston';
 
 export default class IdleService {
-    private idleTimeout: NodeJS.Timer;
+    private idleTimeout: any;
 
     constructor (
         private idleDuration: number,

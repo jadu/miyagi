@@ -13,8 +13,8 @@
         ]
     },
     "files": [
-        "src/**/*.ts",
-        "src/index.d.ts"
+        "src/index.d.ts",
+        "src/server/api.ts"
     ],
     "exclude": [
         "node_modules"
