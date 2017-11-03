@@ -1,6 +1,6 @@
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import { LoggerInstance } from 'winston';
-import { SentimentExtract, Suggestion } from '../interfaces/SentimentExtract';
+import { SentimentExtract, Suggestion, Option } from '../interfaces/SentimentExtract';
 import { InteractiveComponentPayload } from '../interfaces/Slack';
 import ListService from './ListService';
 
@@ -29,10 +29,16 @@ export default class DatabaseService {
         }
     }
 
-    public async updateExtractSuggestions (extractId: string, userId: string, value: string) {
+    public async updateExtractSuggestions (
+        extractId: string,
+        userId: string,
+        value: string,
+        options: Option[]
+    ) {
         const suggestion: Suggestion = {
             user_id: userId,
-            value: value
+            value: value,
+            options: options
         };
 
         await this.connect();
