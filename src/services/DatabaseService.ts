@@ -33,7 +33,7 @@ export default class DatabaseService {
         extractId: string,
         userId: string,
         value: string,
-        options: Option[]
+        options?: Option[]
     ) {
         const suggestion: Suggestion = {
             user_id: userId,
