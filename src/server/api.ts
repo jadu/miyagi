@@ -127,8 +127,10 @@ app.get('/miyapi/extract', async (req, res) => {
 
 app.post('/miyapi/extract', async (req, res) => {
     try {
-        const { _id, value, user_id } = req.body;
+        const { _id, value, user_id, options } = req.body;
         const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
+
+        console.log(req.body)
 
         databaseService.updateExtractSuggestions(_id, user_id, value);
 

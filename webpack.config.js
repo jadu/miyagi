@@ -1,5 +1,6 @@
 const path = require('path');
 const Html = require('webpack-html-plugin');
+const webpack = require('webpack');
 
 module.exports = (env = {}) => {
     const config = {
@@ -12,7 +13,11 @@ module.exports = (env = {}) => {
             },
             module: {
                 rules: [
-                    { test: /\.js?$/, loader: 'babel-loader', exclude: /node_modules/ },
+                    {
+                        test: /\.js?$/,
+                        loader: 'babel-loader',
+                        exclude: /node_modules/
+                    },
                     {
                         test: /\.scss$/,
                         use: [
