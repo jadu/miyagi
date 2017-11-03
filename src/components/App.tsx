@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { BrowserRouter, Route, Link, Redirect } from 'react-router-dom';
 import Login from './Login';
-import Sentiment from './Sentiment';
-import AuthenticationService from './AuthenticationService';
+import AuthenticationService from '../services/AuthenticationService';
 import ProtectedRoute from './ProtectedRoute';
 import Miyagi from './Miyagi';
 import TopBar from './TopBar';
@@ -26,7 +25,7 @@ export default class App extends React.Component {
 
                     <Route path="/introduction" render={Introduction}/>
 
-                    <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
+                    <ProtectedRoute exact={true} path="/" Component={Miyagi} authenticationService={authenticationService}/>
                 </div>
             </BrowserRouter>
         );

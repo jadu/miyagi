@@ -1,7 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
-export default class Suggestions extends React.Component {
+export interface SuggestionsProps {
+    children: any[];
+    onSuggestion: (value: string) => void;
+}
+
+export interface SuggestionsState {
+    activeValue: null|string;
+}
+
+export default class Suggestions extends React.Component<SuggestionsProps, {}> {
+    public state: SuggestionsState;
+
     constructor (props) {
         super(props);
 
@@ -37,9 +47,3 @@ export default class Suggestions extends React.Component {
         )
     }
 }
-
-Suggestions.propTypes = {
-    onSuggestion: PropTypes.func.isRequired
-}
-
-

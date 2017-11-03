@@ -1,9 +1,30 @@
-import React from 'react';
+import * as React from 'react';
 import doneIcon from '../../assets/done.png';
 import TransitionPhaseService from '../services/TransitionPhaseService';
 import Button from './Button';
+import { Transition } from '../interfaces/Transition';
 
-export default class Suggestion extends React.Component {
+export interface SuggestionProps {
+    icon: string;
+    value: string;
+    shortcut: number;
+    id?: string;
+    key?: string;
+    handleClick?: () => void;
+    handleSuggestion?: () => void;
+    active?: string|null;
+}
+
+export interface SuggestionState {
+    phase: Transition;
+    overwrittenValue: string;
+    overwrittenIcon: string;
+}
+
+export default class Suggestion extends React.Component<SuggestionProps, {}> {
+    private transitionPhaseService: TransitionPhaseService;
+    public state: SuggestionState;
+
     constructor (props) {
         super(props);
 

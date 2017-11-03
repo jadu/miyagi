@@ -1,9 +1,25 @@
-import React from 'react';
-import { Redirect } from 'react-router-dom';
+import * as React from 'react';
+import { Redirect, NavLinkProps } from 'react-router-dom';
 import Button from './Button';
+import AuthenticationService from '../services/AuthenticationService';
 
-export default class Login extends React.Component {
-    constructor (props) {
+export interface LoginProps {
+    authenticationService: AuthenticationService;
+    [index: string]: any
+}
+
+export interface LoginState {
+    redirectToReferrer: boolean;
+    error: string;
+}
+
+export default class Login extends React.Component<LoginProps, {}> {
+    public state: LoginState;
+    private nameInput: HTMLInputElement;
+
+    constructor (
+        props: LoginProps
+    ) {
         super(props);
 
         this.state = {
@@ -14,7 +30,7 @@ export default class Login extends React.Component {
 
     handleLogin () {
         const anonymous = false;
-        const value = this.refs.name.value.trim();
+        const value = this.nameInput.value.trim();
 
         if (value || anonymous) {
             this.props.authenticationService.authenticate(anonymous ? null : value);
@@ -26,7 +42,7 @@ export default class Login extends React.Component {
 
     handleAnonymousLogin (event) {
         event.preventDefault();
-        this.handleLogin(true);
+        this.handleLogin();
     }
 
     render () {
@@ -49,7 +65,7 @@ export default class Login extends React.Component {
                     </p>
                     { this.state.error && <p className="error">{this.state.error}</p> }
                     <div className="input-group">
-                        <input ref="name" className="input" type="text" placeholder="Daniel LaRusso"/>
+                        <input ref={(input) => { this.nameInput = input; }} className="input" type="text" placeholder="Daniel LaRusso"/>
                         <Button
                             value="Get started"
                             onClick={this.handleLogin.bind(this)}

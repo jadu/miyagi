@@ -1,7 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
-export default class Button extends React.Component {
+export interface ButtonProps {
+    value: string;
+    modifiers?: string[];
+    onClick?: () => void;
+    icon?: string;
+    id?: string;
+    active?: boolean;
+}
+
+export default class Button extends React.Component<ButtonProps, {}> {
     render() {
         const { modifiers, onClick, icon, value, id } = this.props;
         const active = this.props.active !== undefined ? this.props.active : true;
@@ -20,12 +28,3 @@ export default class Button extends React.Component {
         );
     }
 };
-
-Button.propTtypes = {
-    value: PropTypes.string.isRequired,
-    icon: PropTypes.string,
-    onClick: PropTypes.func,
-    modifiers: PropTypes.array,
-    active: PropTypes.bool,
-    id: PropTypes.string
-}

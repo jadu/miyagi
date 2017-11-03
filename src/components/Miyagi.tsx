@@ -1,42 +1,56 @@
-import React from 'react';
+import * as React from 'react';
 import Suggestions from './Suggestions';
 import Suggestion from './Suggestion';
 import Extract from './Extract';
-import reqwest from 'reqwest';
+import * as reqwest from 'reqwest';
 import Help from './Help';
-import neutralIcon from '../../assets/neutral.png';
-import negativeIcon from '../../assets/angry.png';
-import positiveIcon from '../../assets/positive.png';
-import unicornIcon from '../../assets/unicorn.png';
-import pooIcon from '../../assets/poo.png';
+import * as neutralIcon from '../../assets/neutral.png';
+import * as negativeIcon from '../../assets/angry.png';
+import * as positiveIcon from '../../assets/positive.png';
+import * as unicornIcon from '../../assets/unicorn.png';
+import * as pooIcon from '../../assets/poo.png';
 import { Link } from 'react-router-dom';
 import TheManHimself from './TheManHimself';
 import Options from './Options';
+import AuthenticationService from '../services/AuthenticationService';
+import { SuggestionsUI } from '../interfaces/SuggestionUI';
+import { AuthenticationUser } from '../interfaces/Authentication';
+import { OptionUI } from '../interfaces/OptionUI';
 
-export default class Miyagi extends React.Component {
+export interface MiyagiProps {
+    authenticationService: AuthenticationService;
+}
+
+export interface MiyagiState {
+    extract: string;
+    extractId: string;
+    username: string;
+    options: OptionUI[];
+}
+
+export default class Miyagi extends React.Component<MiyagiProps, {}> {
+    private suggestionMap: SuggestionsUI;
+    public state: MiyagiState;
+
     constructor (props) {
         super(props);
 
         this.state = {
             extract: '',
             extractId: '',
-            user: this.props.authenticationService.getAuthenticatedUser().user,
+            username: this.props.authenticationService.getAuthenticatedUser().user,
             options: [
                 { id: 'incomplete_redaction', label: 'This extract contains content that should be redacted', checked: false }
             ]
         };
 
         this.suggestionMap = {
-            positive: { handler: this.makeSuggestion.bind(this), icon: positiveIcon, value: 'Positive', shortcut: 49, keypress: 1 },
-            neutral: { handler: this.makeSuggestion.bind(this), icon: neutralIcon, value: 'Neutral', shortcut: 50, keypress: 2 },
-            negative: { handler: this.makeSuggestion.bind(this), icon: negativeIcon, value: 'Negative', shortcut: 51, keypress: 3 },
-            not_sure: { handler: this.makeSuggestion.bind(this), icon: unicornIcon, value: 'Not Sure', shortcut: 52, keypress: 4 },
-            impossible: { handler: this.makeSuggestion.bind(this), icon: pooIcon, value: 'Impossible', shortcut: 53, keypress: 5 }
+            positive: { handler: this.makeSuggestion.bind(this), icon: positiveIcon, value: 'Positive', shortcut: 49, keypress: '1' },
+            neutral: { handler: this.makeSuggestion.bind(this), icon: neutralIcon, value: 'Neutral', shortcut: 50, keypress: '2' },
+            negative: { handler: this.makeSuggestion.bind(this), icon: negativeIcon, value: 'Negative', shortcut: 51, keypress: '3' },
+            not_sure: { handler: this.makeSuggestion.bind(this), icon: unicornIcon, value: 'Not Sure', shortcut: 52, keypress: '4' },
+            impossible: { handler: this.makeSuggestion.bind(this), icon: pooIcon, value: 'Impossible', shortcut: 53, keypress: '5' }
         };
-
-        this.options = [
-
-        ]
 
         this.getExtract();
     }
@@ -49,8 +63,8 @@ export default class Miyagi extends React.Component {
     }
 
     makeSuggestion (key) {
-        const options = [...this.state.options].map(option => ({ id: option.id, value: option.checked }));
-        const data = { _id: this.state.extractId, value: key, user_id: this.state.user, options: options };
+        const options = [].concat(this.state.options).map(option => ({ id: option.id, value: option.checked }));
+        const data = { _id: this.state.extractId, value: key, user_id: this.state.username, options: options };
 
         return new Promise (resolve => {
             reqwest({

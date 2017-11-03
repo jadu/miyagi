@@ -1,13 +1,21 @@
+import { AuthenticationUser } from '../interfaces/Authentication';
+
 export default class AuthenticationService {
-    constructor (root) {
+    private usernameStorageKey: string;
+    private user: any;
+    private token: string;
+    private authenticated: boolean;
+
+    constructor (
+        private root: Window
+    ) {
         this.authenticated = false;
         this.token = '';
         this.user = null;
         this.usernameStorageKey = 'miyagi:user';
-        this.root = root;
     }
 
-    init () {
+    public init () {
         const storedUsername = this.root.localStorage.getItem(this.usernameStorageKey);
 
         if (storedUsername && storedUsername.length) {
@@ -16,7 +24,7 @@ export default class AuthenticationService {
         }
     }
 
-    authenticate (username) {
+    public authenticate (username) {
         if (username !== null) {
             const formattedUsername = username.split(' ').map(word => {
                 return word[0].toUpperCase() + word.slice(1);
@@ -31,7 +39,7 @@ export default class AuthenticationService {
         this.authenticated = true;
     }
 
-    getAuthenticatedUser () {
+    public getAuthenticatedUser (): AuthenticationUser {
         return {
             authenticated: this.authenticated,
             user: this.user

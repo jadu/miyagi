@@ -5,19 +5,19 @@ const webpack = require('webpack');
 module.exports = (env = {}) => {
     const config = {
         'web': {
-            entry: path.join(__dirname, 'src/index.js'),
+            entry: path.join(__dirname, 'src/index.tsx'),
             output: {
                 path: path.join(__dirname, 'dist/www'),
                 filename: 'client.bundle.js',
                 publicPath: '/'
             },
+            resolve: {
+                extensions: [".ts", ".tsx", ".js", ".json"]
+            },
             module: {
                 rules: [
-                    {
-                        test: /\.js?$/,
-                        loader: 'babel-loader',
-                        exclude: /node_modules/
-                    },
+                    { test: /\.tsx?$/, use: 'awesome-typescript-loader', exclude: /(node_modules|tests)/ },
+                    { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' },
                     {
                         test: /\.scss$/,
                         use: [

@@ -1,11 +1,17 @@
+import { TransitionMap, Transition, TransitionState } from '../interfaces/Transition';
+
 export default class TransitionPhaseService {
-    constructor (transitionMap) {
-        this.transitionMap = transitionMap;
+    private active: boolean;
+    private phase: Transition;
+
+    constructor (
+        private transitionMap: TransitionMap
+    ) {
         this.phase = this.transitionMap[Object.keys(this.transitionMap).shift()];
         this.active = false;
     }
 
-    update (state, wait) {
+    update (state, wait): Promise<TransitionState> {
         const nextPhase = this.transitionMap[state.phase.next];
 
         this.active = true;

@@ -1,4 +1,8 @@
-import React from 'react';
+import * as React from 'react';
+
+export interface HelpProps {
+    shortcuts: any[]
+}
 
 export default function Help ({ shortcuts }) {
     return (

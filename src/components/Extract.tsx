@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 function replaceCharacters (text, original, replacement) {
     const re = new RegExp(`\\${original}`, 'gi');
@@ -7,7 +6,11 @@ function replaceCharacters (text, original, replacement) {
     return text.replace(re, replacement);
 }
 
-export default function Extract ({ text }) {
+export interface ExtractProps {
+    text: string;
+}
+
+export default function Extract ({ text }: ExtractProps) {
     const parsedText = text.split(/\n/g)
         .map((line, index) =>
             <p key={line.slice(0, 5) + index} className="extract__copy">{ replaceCharacters(line, '*', '█') }</p>
@@ -22,8 +25,4 @@ export default function Extract ({ text }) {
             </div>
         </div>
     )
-}
-
-Extract.propTypes = {
-    text: PropTypes.string.isRequired
 }
