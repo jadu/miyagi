@@ -159,19 +159,21 @@ app.get('/miyapi/statistics', async (req, res) => {
         const extracts: SentimentExtract[] = await databaseService.getAllExtracts();
         const userMap: SortableUserMap = createSortableUserObject(createUserObject(extracts));
         const suggestionsSubmitted: number = countSortableObjectValues(userMap);
+        const extractsWithSuggestions: number = extracts.filter((e: SentimentExtract) => e.has_suggestion).length;
         const totalExtracts: number = extracts.length;
         const percentageComplete: number = Math.floor((suggestionsSubmitted / totalExtracts) * 100);
 
         res.status(200);
         res.send(JSON.stringify({
             percentageComplete: percentageComplete < 100 ? percentageComplete : 100,
+            extractsWithSuggestions,
             suggestionsSubmitted,
             totalExtracts,
         }));
     } catch (error) {
         res.status(500);
         res.send(JSON.stringify({
-            error: 'Could not get extract'
+            error: 'Could not get extract statistics'
         }));
     }
 });

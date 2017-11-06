@@ -1,6 +1,7 @@
 export interface SentimentExtract {
     text: string;
     _id?: string;
+    has_suggestion?: boolean;
     suggestions: Suggestion[];
 }
 

@@ -60,10 +60,15 @@ export default class Miyagi extends React.Component<MiyagiProps, {}> {
             url: 'miyapi/statistics',
             method: 'get'
         }).then(res => {
-            const { percentageComplete, suggestionsSubmitted, totalExtracts } = JSON.parse(res);
+            const {
+                percentageComplete,
+                suggestionsSubmitted,
+                totalExtracts,
+                extractsWithSuggestions
+            } = JSON.parse(res);
 
             console.log('Percentage Complete: ', percentageComplete + '%');
-            console.log('Progress: ', `${suggestionsSubmitted}/${totalExtracts}`);
+            console.log('Progress: ', `${extractsWithSuggestions}/${totalExtracts}`);
         });
     }
 
