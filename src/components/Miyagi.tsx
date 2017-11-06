@@ -73,9 +73,21 @@ export default class Miyagi extends React.Component<MiyagiProps, {}> {
                 data: data
             }).then(async res => {
                 await this.updateExtractFromResponse(res);
+                this.resetOptions();
                 resolve();
             });
         });
+    }
+
+    resetOptions () {
+        const newOptions = [...this.state.options].map(option => {
+            const opt = Object.assign({}, option);
+
+            opt.checked = false;
+            return opt;
+        });
+
+        this.setState({ options: newOptions });
     }
 
     async updateExtractFromResponse (response) {
