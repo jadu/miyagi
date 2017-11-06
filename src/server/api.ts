@@ -145,7 +145,8 @@ app.post('/miyapi/extract', async (req, res) => {
     } catch (error) {
         res.status(500);
         res.send(JSON.stringify({
-            error: 'Could not get extract'
+            text: 'Could not get extract',
+            error: error
         }));
     }
 });
@@ -174,7 +175,8 @@ app.get('/miyapi/statistics', async (req, res) => {
         console.log(error);
         res.status(500);
         res.send(JSON.stringify({
-            error: 'Could not get extract statistics'
+            text: 'Could not get extract statistics',
+            error: error
         }));
     }
 });
