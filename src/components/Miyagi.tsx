@@ -55,6 +55,18 @@ export default class Miyagi extends React.Component<MiyagiProps, {}> {
         this.getExtract();
     }
 
+    componentDidMount () {
+        reqwest({
+            url: 'miyapi/statistics',
+            method: 'get'
+        }).then(res => {
+            const { percentageComplete, suggestionsSubmitted, totalExtracts } = JSON.parse(res);
+
+            console.log('Percentage Complete: ', percentageComplete + '%');
+            console.log('Progress: ', `${suggestionsSubmitted}/${totalExtracts}`);
+        });
+    }
+
     getExtract () {
         reqwest({
             url: 'miyapi/extract',
