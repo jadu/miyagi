@@ -4,8 +4,8 @@
     right: 0;
     width: 45vh;
     opacity: .25;
-    max-width: 250px;
-    z-index: 0;
+    max-width: 225px;
+    z-index: -1;
     transition: opacity 1000ms;
 
     @include respond-min($bp-miyagi-show) {

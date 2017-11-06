@@ -7,10 +7,12 @@
     cursor: pointer;
     vertical-align: middle;
     padding-left: .5rem;
+    width: calc(100% - 2rem);
 }
 
 .option__input {
     display: inline-block;
     cursor: pointer;
     vertical-align: middle;
+    width: 1rem;
 }
