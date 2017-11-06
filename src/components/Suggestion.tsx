@@ -1,5 +1,5 @@
 import * as React from 'react';
-import doneIcon from '../../assets/done.png';
+import * as doneIcon from '../../assets/done.png';
 import TransitionPhaseService from '../services/TransitionPhaseService';
 import Button from './Button';
 import { Transition } from '../interfaces/Transition';
