@@ -109,7 +109,7 @@ if (SLACK_API_TOKEN !== null) {
 
 app.get('/miyapi/extract', async (req, res) => {
     try {
-        const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
+        const extract: SentimentExtract = await databaseService.getUniqueExtract();
 
         res.status(200);
         res.send(JSON.stringify({
@@ -130,7 +130,7 @@ app.get('/miyapi/extract', async (req, res) => {
 app.post('/miyapi/extract', async (req, res) => {
     try {
         const { _id, value, user_id, options } = req.body;
-        const extract: SentimentExtract = (await databaseService.getRandomExtracts(1))[0];
+        const extract: SentimentExtract = await databaseService.getUniqueExtract();
 
         databaseService.updateExtractSuggestions(_id, user_id, value, options);
 

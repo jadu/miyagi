@@ -29,6 +29,26 @@ export default class DatabaseService {
         }
     }
 
+    public async getUniqueExtract (): Promise<SentimentExtract> {
+        try {
+            await this.connect();
+            const extracts: SentimentExtract[] = await this.connection.collection(this.extractCollection).aggregate([
+                { $sample: { size: 15000 } }
+            ]).toArray();
+            const unique: SentimentExtract = extracts.find((extract: SentimentExtract) => {
+                return !extract.suggestions.length;
+            });
+
+            if (unique) {
+                return unique;
+            } else {
+                return extracts[0];
+            }
+        } finally {
+            this.close();
+        }
+    }
+
     public async getAllExtracts (): Promise<SentimentExtract[]> {
         try {
             await this.connect();
@@ -64,14 +84,14 @@ export default class DatabaseService {
 
             // Get 100 random extracts from the database
             const extracts: SentimentExtract[] = await this.connection.collection(this.extractCollection).aggregate([
-                { $sample: { size: 100 } }
+                { $sample: { size: 5000 } }
             ]).toArray();
             // Try to get a unique extract from the database
             const unique: SentimentExtract[] = extracts.filter((extract: SentimentExtract) => {
-                return !extract.suggestions.find((suggestion: Suggestion) => {
-                    return suggestion.user_id === userId;
-                });
+                return !extract.suggestions.length;
             });
+
+            console.log('unique extract: ', unique);
 
             // If there are no unique extracts in the random sample, return a duplicate
             return unique.length ? this.listService.getRandomItem(unique) : extracts[0];
