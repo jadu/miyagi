@@ -109,6 +109,6 @@ export default class DatabaseService {
     }
 
     private async close (): Promise<any> {
-        this.connection.close();
+        // this.connection.close();
     }
 }
