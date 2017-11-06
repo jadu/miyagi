@@ -29,6 +29,15 @@ export default class DatabaseService {
         }
     }
 
+    public async getAllExtracts (): Promise<SentimentExtract[]> {
+        try {
+            await this.connect();
+            return await this.connection.collection(this.extractCollection).find({}).toArray();
+        } finally {
+            this.close();
+        }
+    }
+
     public async updateExtractSuggestions (
         extractId: string,
         userId: string,

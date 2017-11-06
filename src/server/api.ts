@@ -16,6 +16,8 @@ import ResponseHandler from '../handlers/ResponseHandler';
 import { SentimentExtract } from '../interfaces/SentimentExtract';
 import cors = require('cors');
 import path = require('path');
+import { createUserObject, createSortableUserObject, countSortableObjectValues } from '../utilities/statistics';
+import { UserMap, SortableUserMap } from '../interfaces/Users';
 
 /**
  * Logging
@@ -150,6 +152,28 @@ app.post('/miyapi/extract', async (req, res) => {
 
 app.post('/miyapi/suggestion', (req, res) => {
     res.sendStatus(200);
+});
+
+app.get('/miyapi/statistics', async (req, res) => {
+    try {
+        const extracts: SentimentExtract[] = await databaseService.getAllExtracts();
+        const userMap: SortableUserMap = createSortableUserObject(createUserObject(extracts));
+        const suggestionsSubmitted: number = countSortableObjectValues(userMap);
+        const totalExtracts: number = extracts.length;
+        const percentageComplete: number = Math.floor((suggestionsSubmitted / totalExtracts) * 100);
+
+        res.status(200);
+        res.send(JSON.stringify({
+            percentageComplete: percentageComplete < 100 ? percentageComplete : 100,
+            suggestionsSubmitted,
+            totalExtracts,
+        }));
+    } catch (error) {
+        res.status(500);
+        res.send(JSON.stringify({
+            error: 'Could not get extract'
+        }));
+    }
 });
 
 app.get('/', (req, res) => {

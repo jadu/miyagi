@@ -76,7 +76,6 @@
     "build": "npm run build:web && npm run build:api",
     "build:web": "webpack -p --env.platform=web",
     "build:api": "tsc",
-    "production": "npm run build && npm run start:production",
     "backup": "mongodump --db sentiment --collection=extracts --archive=data/extracts.`date \"+%Y%m%d-%H%M%S\"`.archive"
   },
   "jest": {

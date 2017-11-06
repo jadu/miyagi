@@ -7,6 +7,7 @@ import Miyagi from './Miyagi';
 import TopBar from './TopBar';
 import TheManHimself from './TheManHimself';
 import Introduction from './Introduction';
+import Statistics from './Statistics';
 
 const authenticationService = new AuthenticationService(window);
 
@@ -24,6 +25,7 @@ export default class App extends React.Component {
                     }/>
 
                     <Route path="/introduction" render={Introduction}/>
+                    <Route path="/statistics" render={props => <Statistics { ...props }/>}/>
 
                     <ProtectedRoute exact={true} path="/" Component={Miyagi} authenticationService={authenticationService}/>
                 </div>
