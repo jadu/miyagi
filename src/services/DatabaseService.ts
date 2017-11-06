@@ -70,12 +70,16 @@ export default class DatabaseService {
             options: options
         };
 
-        await this.connect();
-        return await this.connection.collection(this.extractCollection)
-            .findOneAndUpdate(
-                { _id : new ObjectId(extractId) },
-                { $push: { suggestions: suggestion }}
-            );
+        try {
+            await this.connect();
+            await this.connection.collection(this.extractCollection)
+                .findOneAndUpdate(
+                    { _id : new ObjectId(extractId) },
+                    { $push: { suggestions: suggestion }, $set: { has_suggestion: true } }
+                );
+        } finally {
+            this.close();
+        }
     }
 
     public async getNextExtract (userId: string): Promise<SentimentExtract> {

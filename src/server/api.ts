@@ -171,6 +171,7 @@ app.get('/miyapi/statistics', async (req, res) => {
             totalExtracts,
         }));
     } catch (error) {
+        console.log(error);
         res.status(500);
         res.send(JSON.stringify({
             error: 'Could not get extract statistics'

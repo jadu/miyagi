@@ -32,5 +32,6 @@ MongoClient.connect(DB_URL, async (error, db) => {
     console.log(`${extractsWithSuggestions.length}/${extractsWithSuggestions.length + extractsWithoutSuggestions.length} extracts completed`);
     console.log(`${totalUserSuggestions} user suggestions`);
     console.log(`Top 3 users: ${sortableUsers.slice(0, 3).join(' ')}`);
+    db.close();
     process.exit(0);
 });
