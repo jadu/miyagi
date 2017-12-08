@@ -35,3 +35,20 @@ $extract-highlight: .25rem;
     position: relative;
     padding-left: $global-box-padding;
 }
+
+@keyframes pulse {
+    0% { opacity: .7 }
+    50% { opacity: .4 }
+}
+
+.tombstone {
+    animation: pulse 800ms infinite;
+    background-color: $color-subtle;
+    height: 1rem;
+    opacity: .7;
+    width: 100%;
+}
+
+.tombstone:last-child {
+   width: 40%;
+}

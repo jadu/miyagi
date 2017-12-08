@@ -11,10 +11,14 @@ export interface ExtractProps {
 }
 
 export default function Extract ({ text }: ExtractProps) {
-    const parsedText = text.split(/\n/g)
+    const tombStoneOrText = text.length ? text : '\n\n';
+    const parsedText = tombStoneOrText.split(/\n/g)
         .map((line, index) =>
-            <p key={line.slice(0, 5) + index} className="extract__copy">{ replaceCharacters(line, '*', '█') }</p>
+            <p key={line.slice(0, 5) + index} className={`extract__copy${line.trim().length ? '' : ' tombstone'}`}>{ replaceCharacters(line, '*', '█') }</p>
         );
+
+
+    console.log(parsedText);
 
     return (
         <div className="extract">
