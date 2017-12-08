@@ -1,32 +1,35 @@
 import * as React from 'react';
-
-function replaceCharacters (text, original, replacement) {
-    const re = new RegExp(`\\${original}`, 'gi');
-
-    return text.replace(re, replacement);
-}
+import Tombstone from './Tombstone';
 
 export interface ExtractProps {
     text: string;
 }
 
-export default function Extract ({ text }: ExtractProps) {
-    const tombStoneOrText = text.length ? text : '\n\n';
-    const parsedText = tombStoneOrText.split(/\n/g)
-        .map((line, index) =>
-            <p key={line.slice(0, 5) + index} className={`extract__copy${line.trim().length ? '' : ' tombstone'}`}>{ replaceCharacters(line, '*', '█') }</p>
-        );
+export default class Extract extends React.Component<ExtractProps> {
+    replaceCharacters (text, original, replacement) {
+        const re = new RegExp(`\\${original}`, 'gi');
 
+        return text.replace(re, replacement);
+    }
 
-    console.log(parsedText);
+    render () {
+        const parsedText = this.props.text.split(/\n/g)
+            .map((line, index) =>
+                <p key={line.slice(0, 5) + index} className="extract__copy">{ this.replaceCharacters(line, '*', '█') }</p>
+            );
 
-    return (
-        <div className="extract">
-            <div className="extract__container">
-                <div className="extract__text">
-                    { parsedText }
+        return (
+            <div className="extract">
+                <div className="extract__container">
+                    <div className="extract__text">
+                        {
+                            this.props.text.length
+                                ? parsedText
+                                : <Tombstone length={3}/>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        );
+    }
 }
