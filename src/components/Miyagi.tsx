@@ -148,6 +148,20 @@ export default class Miyagi extends React.Component<MiyagiProps, {}> {
 
         return (
             <div className="miyagi">
+                <div className="definition">
+                    <p className="definition__word">sentiment</p>
+                    <p className="definition__noun">noun</p>
+                    <p className="definition__description">A view or opinion that is held or expressed: <em>I agree with your sentiments regarding the road bridge.</em></p>
+                    <ul className="definition__list">
+                        <li className="definition__list-item">
+                            General feeling or opinion: <em>public sentiment was on the side of reform.</em>
+                        </li>
+                        <li className="definition__list-item">
+                            A feeling or emotion: <em>an intense sentiment of horror.</em>
+                        </li>
+                    </ul>
+                </div>
+
                 <p className="extract__help">Read the extract below and let Miyagi know what you think the sentiment of the message is. There is no right or wrong answer, if you are unsure we'll send you another one. Be sure to read our <Link to="/introduction" className="link link--inline">Introduction to Miyagi</Link> before you begin.</p>
                 <Extract text={this.state.extract}/>
                 <Suggestions onSuggestion={this.handleSuggestion.bind(this)}>

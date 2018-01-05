@@ -25,7 +25,7 @@ export default class App extends React.Component {
                     }/>
 
                     <Route path="/introduction" render={Introduction}/>
-                    <Route path="/statistics" render={props => <Statistics { ...props }/>}/>
+                    {/* <Route path="/statistics" render={props => <Statistics { ...props }/>}/> */}
 
                     <ProtectedRoute exact path="/" Component={Miyagi} authenticationService={authenticationService}/>
                 </div>

@@ -1,0 +1,21 @@
+.definition {
+    border-bottom: 1px solid $color-subtle;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.definition__word {
+    font-style: italic;
+    font-family: serif;
+    font-size: 2rem;
+}
+
+.definition__noun {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.definition__list {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}

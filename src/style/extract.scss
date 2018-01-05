@@ -3,6 +3,7 @@ $extract-highlight: .25rem;
 .extract {
     @extend %box;
 
+    border: 1px solid $color-highlight;
     height: auto;
     margin: 0;
     width: 100%;
@@ -16,24 +17,10 @@ $extract-highlight: .25rem;
     margin-bottom: 1.5rem;
 }
 
-.extract__container {
-    &:before {
-        bottom: $global-box-padding;
-        background-color: $color-highlight;
-        border-radius: $global-border-radius;
-        content: '';
-        left: $global-box-padding;
-        position: absolute;
-        top: $global-box-padding;
-        width: $extract-highlight;
-    }
-}
-
 .extract__text {
     max-height: 30vh;
     overflow-y: scroll;
     position: relative;
-    padding-left: $global-box-padding;
 }
 
 @keyframes pulse {

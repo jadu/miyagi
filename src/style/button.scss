@@ -1,6 +1,6 @@
 .button {
     background-color: white;
-    border: 1px solid $color-subtle;
+    border: 1px solid $color-highlight;
     border-radius: $global-border-radius;
     cursor: pointer;
     font-weight: bold;
@@ -9,7 +9,7 @@
     text-decoration: none;
 
     &:hover {
-        border-color: mix(black, $color-subtle, 30%);
+        border-color: mix(black, $color-highlight, 30%);
         transition: border-color 150ms;
     }
 }
