@@ -6,7 +6,6 @@ Start database service.
 
 ```
 mongod --dbpath data/db
-
 ```
 
 Start web application.
