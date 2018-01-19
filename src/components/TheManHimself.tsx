@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as MrMiyagi from '../../assets/miyagi_xmas.png';
-import * as MrMiyagiBlink from '../../assets/miyagi_blink_xmas.png';
+import * as MrMiyagi from '../../assets/miyagi.png';
+import * as MrMiyagiBlink from '../../assets/miyagi_blink.png';
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

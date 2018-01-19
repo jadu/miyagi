@@ -1,5 +1,5 @@
 declare module 'reqwest';
-declare module '*';
+declare module '*.png';
 
 declare function reqwest ({}: { [index: string]: any }): Promise<any>;
 

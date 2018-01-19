@@ -66,9 +66,8 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "tsc:watch": "tsc --watch",
     "watch:client": "webpack-dev-server --env.platform=web",
-    "watch:client:server": "nodemon dist/server/api.js",
+    "watch:server": "nodemon dist/server/api.js",
     "test": "jest",
     "test:watch": "jest --watch --coverage",
     "start:production": "NODE_ENV=production PORT=80 node dist/server/api.js",
