@@ -8,6 +8,18 @@ A sentiment analysis application for generating crowd sourced training material.
 
 ## Development
 
+[Install Monogdb](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/).
+
+```
+brew install mongodb
+```
+
+Install dependencies.
+
+```
+npm install
+```
+
 Start database service.
 
 ```
