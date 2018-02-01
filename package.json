@@ -75,7 +75,8 @@
     "build": "npm run build:web && npm run build:api",
     "build:web": "webpack -p --env.platform=web",
     "build:api": "tsc",
-    "backup": "mongodump --db sentiment --collection=extracts --archive=data/extracts.`date \"+%Y%m%d-%H%M%S\"`.archive"
+    "backup": "mongodump --db sentiment --collection=extracts --archive=data/extracts.`date \"+%Y%m%d-%H%M%S\"`.archive",
+    "export": "mongoexport --db sentiment --collection extracts --type csv --fields text,suggestions --noHeaderLine --out ./exports/`date \"+%Y%m%d-%H%M%S\"`.csv"
   },
   "jest": {
     "transform": {
