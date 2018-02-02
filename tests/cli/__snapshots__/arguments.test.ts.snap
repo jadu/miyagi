@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateArguments should throw an error for each argument that is missing 1`] = `
+"Required argument \\"--foo\\" is missing
+Required argument \\"--bar\\" is missing"
+`;
