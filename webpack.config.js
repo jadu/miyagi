@@ -1,6 +1,18 @@
 const path = require('path');
 const Html = require('webpack-html-plugin');
 const webpack = require('webpack');
+const glob = require('glob');
+const commands = glob.sync('./src/bin/**/*.ts');
+
+/**
+ * Convert camelCase to snake_case
+ * @param {*} str
+ */
+function camelToSnake (str) {
+    return str.replace(/[A-Z]/g, (hump) => {
+        return `_${hump.toLowerCase()}`;
+    });
+}
 
 module.exports = (env = {}) => {
     const config = {
@@ -67,8 +79,13 @@ module.exports = (env = {}) => {
             }
         },
         'bin': {
-            entry: {
-                tag_suggestions: path.join(__dirname, 'src/bin/tagSuggestions.ts')
+            entry: () => {
+                return commands.reduce((entries, command) => {
+                    const commandFileName = path.basename(command, path.extname(command));
+
+                    entries[camelToSnake(commandFileName)] = command;
+                    return entries;
+                }, {});
             },
             output: {
                 path: path.join(__dirname, 'bin'),
