@@ -52,7 +52,7 @@ npm run backup
 
 # Commands
 
-In order to use the Miyagi commands, they first need to be built from source. Run the following command prior to use:
+In order to use the Miyagi commands, they first need to be built from source. This only needs to be done once and should create a `./bin` directory in the root of the project. Run the following command:
 
 ```
 npm run build:commands
