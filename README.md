@@ -44,7 +44,7 @@ Build for production.
 npm run build
 ```
 
-Backup datatbase
+Backup datatbase.
 
 ```
 npm run backup
