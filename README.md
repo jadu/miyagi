@@ -72,7 +72,7 @@ Pre-made export files useful for development environments are available in `./fi
 
 _Arguments_
 
-* `file` (required) - Path to extracts JSON file
+* `file` (required) - Path to JSON file
 * `database_host` (optional, default: `mongodb://localhost:27017`) - database host URL
 * `database` (optional, default: `sentiment`) - database name
 * `collection` (optional, default: `extracts`) - the collection name
