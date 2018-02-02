@@ -85,6 +85,8 @@ _Example_
 node bin/create_fixtures.js --file fixtures/dev_extracts.json --collection dev_extracts
 ```
 
+---
+
 __Redact Collection__
 
 Redact extracts saved in a MongoDB database. Redaction is taken care of by the (redact-pii)[https://github.com/solvvy/redact-pii] package.
