@@ -26,12 +26,15 @@ describe('validateArguments', () => {
         expect(validateArguments.bind(null, 'foo bar', args)).toThrowErrorMatchingSnapshot();
     });
 
-    test('should not throw an error if arguments are preset', () => {
+    test('should pass args through if no validation errors occur', () => {
         const args = {
             foo: '',
             bar: ''
         };
 
-        expect(validateArguments('foo bar', args)).toBe(undefined);
+        expect(validateArguments('foo bar', args)).toEqual({
+            foo: '',
+            bar: ''
+        });
     });
 });

@@ -34,15 +34,15 @@ export function getArguments (
 export function validateArguments (
     required: string,
     args: Arguments
-): void {
+): Arguments {
     // Create array of argument keys
     const argsObj: string[] = Object.keys(args);
     // Search required arguments
     const errors = required.split(' ').filter((req: string) => argsObj.indexOf(req) === -1);
     // Throw error detailing each error
     if (errors.length) {
-        throw new Error(
-            ...errors.map((e: string) => `Required argument "--${e}" is missing`).join('\n')
-        );
+        throw new Error(errors.map((e: string) => `Required argument "--${e}" is missing`).join('\n'));
     }
+
+    return args;
 }
