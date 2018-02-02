@@ -65,6 +65,26 @@ module.exports = (env = {}) => {
                     { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' }
                 ]
             }
+        },
+        'bin': {
+            entry: {
+                tag_suggestions: path.join(__dirname, 'src/bin/tagSuggestions.ts')
+            },
+            output: {
+                path: path.join(__dirname, 'bin'),
+                filename: '[name].js'
+            },
+            resolve: {
+                extensions: [".ts", ".tsx", ".js", ".json"]
+            },
+            target: 'node',
+            module: {
+                rules: [
+                    { test: /\.ts?$/, use: 'awesome-typescript-loader', exclude: /(node_modules|tests)/ },
+                    { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' },
+                    { test: /\.js?$/, use: 'source-map-loader', enforce: 'pre' }
+                ]
+            }
         }
     }
 
