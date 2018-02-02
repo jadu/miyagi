@@ -95,6 +95,7 @@ module.exports = (env = {}) => {
                 extensions: [".ts", ".tsx", ".js", ".json"]
             },
             target: 'node',
+            stats: 'errors-only',
             module: {
                 rules: [
                     { test: /\.ts?$/, use: 'awesome-typescript-loader', exclude: /(node_modules|tests)/ },
