@@ -58,6 +58,8 @@ In order to use the Miyagi commands, they first need to be built from source. Ru
 npm run build:commands
 ```
 
+---
+
 __Create Fixtures__
 
 Insert a JSON export file into a MongoDB database collection. The schema for the export file should be:
