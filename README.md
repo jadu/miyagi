@@ -56,7 +56,7 @@ npm run backup
 
 ### Commands
 
-####Create Fixtures####
+__Create Fixtures__
 
 Insert a JSON export file into a MongoDB database collection. The schema for the export file should be...
 
@@ -70,14 +70,14 @@ Insert a JSON export file into a MongoDB database collection. The schema for the
 
 Pre-made export files useful for development environments are available in `./fixtures`.
 
-__Arguments__
+_Arguments_
 
 * `file` (required) - Path to extracts JSON file
 * `database_host` (optional, default: `mongodb://localhost:27017`) - database host URL
 * `database` (optional, default: `sentiment`) - database name
 * `collection` (optional, default: `extracts`) - the collection name
 
-__Example__
+_Example_
 
 ```
 node bin/create_fixtures.js --file fixtures/dev_extracts.json --collection dev_extracts
