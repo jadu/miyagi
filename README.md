@@ -85,4 +85,20 @@ _Example_
 node bin/create_fixtures.js --file fixtures/dev_extracts.json --collection dev_extracts
 ```
 
+__Redact Collection__
+
+Redact extracts saved in a MongoDB database. Redaction is taken care of by the (redact-pii)[https://github.com/solvvy/redact-pii] package.
+
+_Arguments_
+
+* `database_host` (optional, default: `mongodb://localhost:27017`) - database host URL
+* `database` (optional, default: `sentiment`) - database name
+* `collection` (optional, default: `extracts`) - the collection name
+
+_Example_
+
+```
+node bin/redact_extracts.js --collection dev_extracts
+```
+
 
