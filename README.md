@@ -6,8 +6,6 @@ A sentiment analysis application for generating crowd sourced training material.
 
 ![Miyagi](assets/gif/miyagi.gif)
 
----
-
 # Development
 
 [Install Monogdb](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/).
@@ -51,8 +49,6 @@ Backup datatbase
 ```
 npm run backup
 ```
-
----
 
 # Commands
 
