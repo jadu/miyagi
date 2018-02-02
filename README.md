@@ -8,7 +8,7 @@ A sentiment analysis application for generating crowd sourced training material.
 
 ---
 
-## Development
+# Development
 
 [Install Monogdb](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/).
 
@@ -54,7 +54,7 @@ npm run backup
 
 ---
 
-### Commands
+# Commands
 
 __Create Fixtures__
 
