@@ -45,7 +45,7 @@ MongoClient.connect(databasePath, async (error, db) => {
     recordTimer.start();
 
     // Get / Set collection
-    const col = db.collection(collection);
+    const col = await db.collection(collection);
 
     // Drop collection
     const sure = await question(rl, `Are you sure you want to delete the contents of "${collection}" in the database "${databasePath}"? (y/n): `);
@@ -65,7 +65,7 @@ MongoClient.connect(databasePath, async (error, db) => {
     // Setup streaming
     const JSONStream = makeSource() as any;
     // Store insertion promises
-    let insertions: Promise<any>[] = [];
+    const insertions: Promise<any>[] = [];
     // Pipe read stream to JSONStreamer
     fs.createReadStream(file).pipe(JSONStream.input);
 
@@ -80,9 +80,6 @@ MongoClient.connect(databasePath, async (error, db) => {
             suggestions: [],
             has_suggestion: false
         }));
-        // Print progress
-        readline.cursorTo(process.stdout, 0);
-        process.stdout.write(`Inserted ${insertions.length} extracts to the database`);
     });
 
     // Stream ended
@@ -90,7 +87,7 @@ MongoClient.connect(databasePath, async (error, db) => {
         // Wait for db insertions to finish
         await Promise.all(insertions);
         // Close db connection
-        db.close();
+        await db.close();
         // End timer
         recordTimer.end();
         // Print summary
