@@ -1,12 +1,13 @@
 import { SentimentExtract } from "../../src/interfaces/SentimentExtract";
-import { removeRedactedChars, normalizeSpaces } from "../../src/utilities/extracts";
+import { createRemoveRedactedCharacters, normalizeSpaces } from "../../src/utilities/extracts";
 
-describe('removeRedactedChars', () => {
+describe('createRemoveRedactedCharacters', () => {
     test('should remove redacted characters from a string', () => {
         const extract: SentimentExtract = {
             text: 'This is a redacted ********** extract',
             suggestions: []
         };
+        const removeRedactedChars = createRemoveRedactedCharacters();
 
         expect(removeRedactedChars(extract).text).toEqual('This is a redacted  extract');
     });
@@ -16,8 +17,9 @@ describe('removeRedactedChars', () => {
             text: 'This is a redacted $$$$$$$$ extract',
             suggestions: []
         };
+        const removeRedactedChars = createRemoveRedactedCharacters('$');
 
-        expect(removeRedactedChars(extract, '$').text).toEqual('This is a redacted  extract');
+        expect(removeRedactedChars(extract).text).toEqual('This is a redacted  extract');
     });
 });
 

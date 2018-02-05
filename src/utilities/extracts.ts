@@ -5,15 +5,16 @@ import { SentimentExtract } from "../interfaces/SentimentExtract";
  * @param extract
  * @param redactionChar
  */
-export function removeRedactedChars (
-    extract: SentimentExtract,
-    redactionChar: string = '*'
-): SentimentExtract {
-    const test = new RegExp(`\\${redactionChar}`, 'g');
+export function createRemoveRedactedCharacters (
+    redactionCharacter: string = '*'
+) {
+    return (extract: SentimentExtract) => {
+        const test = new RegExp(`\\${redactionCharacter}`, 'g');
 
-    return Object.assign({}, extract, {
-        text: extract.text.replace(test, '')
-    });
+        return Object.assign({}, extract, {
+            text: extract.text.replace(test, '')
+        });
+    }
 }
 
 /**
