@@ -56,7 +56,8 @@ module.exports = (env = {}) => {
             devServer: {
                 historyApiFallback: true,
                 proxy: {
-                    '/miyapi': 'http://localhost:4567'
+                    '/miyapi': 'http://localhost:4567',
+                    '/larapi': 'http://localhost:4567'
                 }
             }
         },

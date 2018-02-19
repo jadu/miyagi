@@ -151,10 +151,6 @@ app.post('/miyapi/extract', async (req, res) => {
     }
 });
 
-app.post('/miyapi/suggestion', (req, res) => {
-    res.sendStatus(200);
-});
-
 app.get('/miyapi/statistics', async (req, res) => {
     try {
         const extracts: SentimentExtract[] = await databaseService.getAllExtracts();
@@ -181,12 +177,19 @@ app.get('/miyapi/statistics', async (req, res) => {
     }
 });
 
-app.get('/', (req, res) => {
-    res.sendFile('index.html');
+/**
+ * LaRusso
+ */
+
+app.get('/larapi/meta', (req, res) => {
+    res.send(JSON.stringify({
+        version: '0.0.0',
+        build: 'windows GPU, batch: 64, interations: 1000000'
+    }))
 });
 
-app.get('*', (req, res) => {
-    res.redirect('/');
+app.get('/', (req, res) => {
+    res.sendFile('index.html');
 });
 
 app.listen(PORT, () => {

@@ -19,6 +19,23 @@
     }
 }
 
+.topbar__logo .larusso-logo {
+    &,
+    h1,
+    &:visited,
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: $color-copy-base;
+        color: white;
+        font-size: 1rem;
+        margin: 0;
+        padding: 0 .25rem;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+}
+
 .topbar__user {
     color: $color-subtle;
 }
