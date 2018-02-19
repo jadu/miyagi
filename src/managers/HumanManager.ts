@@ -1,7 +1,7 @@
 import SlackUserService from '../services/SlackUserService';
 import { User } from '../interfaces/Slack';
 import { LoggerInstance } from 'winston';
-import { Suggestion } from '../interfaces/SentimentExtract';
+import { Suggestion, suggestions } from '../interfaces/SentimentExtract';
 import ListService from '../services/ListService';
 
 export default class HumanManager {
@@ -24,7 +24,7 @@ export default class HumanManager {
         return this.activeHumans;
     }
 
-    public addSessionSuggestion (userId: string, name: string, value: string): void {
+    public addSessionSuggestion (userId: string, name: string, value: suggestions): void {
         this.suggestions.push({
             user_id: userId,
             name: name,
