@@ -50,6 +50,7 @@ const app = express();
 
 app.use(favicon(path.join(process.cwd(), 'assets/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(express.static(path.resolve(process.cwd(), 'dist/www/')));
 app.use(cors());
 
@@ -182,9 +183,22 @@ app.get('/miyapi/statistics', async (req, res) => {
  */
 
 app.get('/larapi/meta', (req, res) => {
+    // TODO: get LaRusso meta
+
     res.send(JSON.stringify({
         version: '0.0.0',
         build: 'windows GPU, batch: 64, interations: 1000000'
+    }))
+});
+
+app.post('/larapi/predict', (req, res) => {
+    const { extract } = req.body;
+
+    // TODO: send extract to LaRusso servive
+
+    res.send(JSON.stringify({
+        positive: 1.5,
+        negative: 1.0
     }))
 });
 
