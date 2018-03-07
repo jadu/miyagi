@@ -32,11 +32,19 @@ Start web application.
 npm run watch:client
 ```
 
-Start API server.
+Start API server in a new terminal.
 
 ```
 npm run watch:server
 ```
+
+Start TypeScript server in a new terminal.
+
+```
+npm run tsc -- --watch
+```
+
+# Production
 
 Build for production.
 
