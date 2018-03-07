@@ -5,7 +5,6 @@ import { InteractiveComponentPayload } from '../interfaces/Slack';
 import ListService from './ListService';
 
 export default class DatabaseService {
-    private extractCollection: string;
     private connection: Db;
 
     constructor (
@@ -13,15 +12,15 @@ export default class DatabaseService {
         private client: MongoClient,
         private logger: LoggerInstance,
         private listService: ListService,
-        private dev: boolean
+        private collection: string
     ) {
-        this.extractCollection = this.dev ? 'extracts_dev' : 'extracts';
+        this.logger.info(`Database "${this.url}" Collection "${this.collection}"`);
     }
 
     public async getRandomExtracts (total: number): Promise<SentimentExtract[]> {
         try {
             await this.connect();
-            return await this.connection.collection(this.extractCollection).aggregate([
+            return await this.connection.collection(this.collection).aggregate([
                 { $sample: { size: total } }
             ]).toArray();
         } finally {
@@ -30,29 +29,29 @@ export default class DatabaseService {
     }
 
     public async getUniqueExtract (): Promise<SentimentExtract> {
-        try {
-            await this.connect();
-            const extracts: SentimentExtract[] = await this.connection.collection(this.extractCollection).aggregate([
+        await this.connect();
+
+        const extracts: SentimentExtract[] = await this.connection.collection(this.collection)
+            .aggregate([
                 { $sample: { size: 15000 } }
             ]).toArray();
-            const unique: SentimentExtract = extracts.find((extract: SentimentExtract) => {
-                return !extract.suggestions.length;
-            });
+        const unique: SentimentExtract = extracts.find((extract: SentimentExtract) => {
+            return !extract.suggestions.length;
+        });
 
-            if (unique) {
-                return unique;
-            } else {
-                return extracts[0];
-            }
-        } finally {
-            this.close();
+        this.close();
+
+        if (unique) {
+            return unique;
+        } else {
+            return extracts[0];
         }
     }
 
     public async getAllExtracts (): Promise<SentimentExtract[]> {
         try {
             await this.connect();
-            return await this.connection.collection(this.extractCollection).find({}).toArray();
+            return await this.connection.collection(this.collection).find({}).toArray();
         } finally {
             this.close();
         }
@@ -72,7 +71,7 @@ export default class DatabaseService {
 
         try {
             await this.connect();
-            await this.connection.collection(this.extractCollection)
+            await this.connection.collection(this.collection)
                 .findOneAndUpdate(
                     { _id : new ObjectId(extractId) },
                     { $push: { suggestions: suggestion }, $set: { has_suggestion: true } }
@@ -87,15 +86,13 @@ export default class DatabaseService {
             await this.connect();
 
             // Get 100 random extracts from the database
-            const extracts: SentimentExtract[] = await this.connection.collection(this.extractCollection).aggregate([
+            const extracts: SentimentExtract[] = await this.connection.collection(this.collection).aggregate([
                 { $sample: { size: 5000 } }
             ]).toArray();
             // Try to get a unique extract from the database
             const unique: SentimentExtract[] = extracts.filter((extract: SentimentExtract) => {
                 return !extract.suggestions.length;
             });
-
-            console.log('unique extract: ', unique);
 
             // If there are no unique extracts in the random sample, return a duplicate
             return unique.length ? this.listService.getRandomItem(unique) : extracts[0];

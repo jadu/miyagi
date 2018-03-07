@@ -37,10 +37,11 @@ const PORT = process.env.PORT || 4567;
 /**
  * Services
  */
+const collection: string = process.env.COLLECTION || 'extracts';
 const databaseService: DatabaseService = (new DatabaseServiceFactory()).create(
     DATABASE_URL,
     logger,
-    process.env.NODE_ENV !== 'production'
+    collection
 );
 
 /**
@@ -108,23 +109,36 @@ if (SLACK_API_TOKEN !== null) {
 }
 
 app.get('/miyapi/extract', async (req, res) => {
-    try {
-        const extract: SentimentExtract = await databaseService.getUniqueExtract();
+    let extract: SentimentExtract;
 
-        res.status(200);
-        res.send(JSON.stringify({
-            extract: {
-                _id: extract._id,
-                text: extract.text
-            },
-            error: false
-        }));
-    } catch (error) {
+    function error (msg: string) {
         res.status(500);
         res.send(JSON.stringify({
-            error: 'Could not get extract'
+            extract: {
+                text: `Unable to get extract ¯\\_(ツ)_/¯\n"${msg}"`,
+                _id: "null"
+            }
         }));
     }
+
+    try {
+        extract = await databaseService.getUniqueExtract();
+    } catch (error) {
+        return error(error.message);
+    }
+
+    if (extract === undefined) {
+        return error("Extract is undefined");
+    }
+
+    res.status(200);
+    res.send(JSON.stringify({
+        extract: {
+            _id: extract._id,
+            text: extract.text
+        },
+        error: false
+    }));
 });
 
 app.post('/miyapi/extract', async (req, res) => {

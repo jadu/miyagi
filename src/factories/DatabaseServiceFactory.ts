@@ -7,14 +7,14 @@ export default class DatabaseServiceFactory {
     public create (
         url: string,
         logger: LoggerInstance,
-        dev: boolean = false
+        collection: string
     ): DatabaseService {
         return new DatabaseService(
             url,
             new MongoClient(),
             logger,
             new ListService(),
-            dev
+            collection
         );
     }
 }
