@@ -76,7 +76,11 @@ export default class Miyagi extends React.Component<MiyagiProps, {}> {
         reqwest({
             url: 'miyapi/extract',
             method: 'get'
-        }).then(this.updateExtractFromResponse.bind(this));
+        })
+        .then(this.updateExtractFromResponse.bind(this))
+        .catch(({ response }) => {
+            this.updateExtractFromResponse(response);
+        });
     }
 
     makeSuggestion (key) {
