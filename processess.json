@@ -1,9 +1,21 @@
 {
     "apps": [{
+        "name": "miyagi",
         "script": "dist/server/api.js",
         "env": {
             "NODE_ENV": "production",
-            "PORT": "80"
+            "PORT": "80",
+            "COLLECTION": "extracts"
+        },
+        "env_local": {
+            "NODE_ENV": "local",
+            "PORT": "8080",
+            "COLLECTION": "extracts_dev"
+        },
+        "env_academy": {
+            "NODE_ENV": "local",
+            "PORT": "8080",
+            "COLLECTION": "academy"
         }
     }]
 }
