@@ -18,6 +18,7 @@ import cors = require('cors');
 import path = require('path');
 import { createUserObject, createSortableUserObject, countSortableObjectValues } from '../utilities/statistics';
 import { UserMap, SortableUserMap } from '../interfaces/Users';
+import fs = require('fs');
 
 /**
  * Logging
@@ -33,6 +34,7 @@ const logger = new Logger({
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/sentiment';
 const SLACK_API_TOKEN = process.env.SLACK_API_TOKEN || null;
 const PORT = process.env.PORT || 4567;
+const ACADEMY = process.env.ACADEMY || null;
 
 /**
  * Services
@@ -54,58 +56,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(process.cwd(), 'dist/www/')));
 app.use(cors());
 
-/**
- * Slack
- */
-if (SLACK_API_TOKEN !== null) {
-    const slackAuthenticationService: SlackAuthenticationService = new SlackAuthenticationService(
-        SLACK_API_TOKEN, logger
+let extractIndex = 0;
+
+function getExtract () {
+    const extracts = JSON.parse(
+        fs.readFileSync('fixtures/academy_extracts.json', 'utf-8')
     );
+    const extract = extracts[extractIndex];
 
-    try {
-        slackAuthenticationService.connect();
-    } catch (error) {
-        logger.error(error);
-    }
+    extractIndex = extractIndex + 1 === extracts.length ? 0 : extractIndex + 1;
 
-    /**
-     * Miyagi
-     */
-    const miyagi: Miyagi = (new MiyagiFactory()).create(
-        slackAuthenticationService.getWebClient(),
-        databaseService,
-        logger,
-        ['Have you got 5 minutes to help us train our Machine Learning platform? ' +
-            'Read the extract below and let me know if you think it is *Positive*, *Negative* or *Neutral*'],
-        ['Thank you, would you like to play again?'],
-        ['Thank you for your help today, see you next time :wave:'],
-        300000
-    );
-
-    /**
-     * Handlers
-     */
-    const responseHandler: ResponseHandler = (new ResponseHandlerFactory()).create(
-        databaseService,
-        miyagi,
-        logger,
-        1000
-    );
-
-    // Setup http server to receive slack POST requests
-    app.post('/', responseHandler.respond.bind(responseHandler));
-
-    app.get('/cli/send_questions', async (req, res) => {
-        try {
-            miyagi.setDebug(req.query.debug);
-            await miyagi.refresh();
-            miyagi.nextThread();
-            res.sendStatus(200);
-        } catch (error) {
-            logger.error(error);
-            res.sendStatus(500);
-        }
-    });
+    return { _id: 'ACADEMY', text: extract } as SentimentExtract;;
 }
 
 app.get('/miyapi/extract', async (req, res) => {
@@ -121,14 +82,18 @@ app.get('/miyapi/extract', async (req, res) => {
         }));
     }
 
-    try {
-        extract = await databaseService.getUniqueExtract();
-    } catch (error) {
-        return error(error.message);
-    }
+    if (!ACADEMY) {
+        try {
+            extract = await databaseService.getUniqueExtract();
+        } catch (error) {
+            return error(error.message);
+        }
 
-    if (extract === undefined) {
-        return error("Extract is undefined");
+        if (extract === undefined) {
+            return error("Extract is undefined");
+        }
+    } else {
+        extract = getExtract();
     }
 
     res.status(200);
@@ -144,9 +109,14 @@ app.get('/miyapi/extract', async (req, res) => {
 app.post('/miyapi/extract', async (req, res) => {
     try {
         const { _id, value, user_id, options } = req.body;
-        const extract: SentimentExtract = await databaseService.getUniqueExtract();
+        let extract;
 
-        databaseService.updateExtractSuggestions(_id, user_id, value, options);
+        if (!ACADEMY) {
+            extract = await databaseService.getUniqueExtract();
+            databaseService.updateExtractSuggestions(_id, user_id, value, options);
+        } else {
+            extract = getExtract();
+        }
 
         res.status(200);
         res.send(JSON.stringify({
